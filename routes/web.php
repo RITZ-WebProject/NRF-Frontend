@@ -44,8 +44,7 @@ Route::middleware(['logout'])->group(function() {
     	Route::get('/remove-from-cart/{id}', [OrderController::class, 'removeCart'])->name('cart.remove');
     	Route::get('/clearCart', [OrderController::class, 'clearCart'])->name('cart.clear');
 		Route::post('/check-stock', [OrderController::class, 'checkStock'])->name('check-stock');
-		Route::get('success',[OrderController::class,'success']);
- 		Route::get('error',[OrderController::class,'error']);
+		
     	Route::get('/account',[CustomersController::class,'profile']);
 		Route::get('/account/{id}',[CustomersController::class,'editProfile']);
         Route::put('/storeProfile/{id}',[CustomersController::class,'storeProfile'])->name('storeProfile');
@@ -54,7 +53,9 @@ Route::middleware(['logout'])->group(function() {
     	Route::get('/order_details/{id}',[CustomersController::class,'order_view']);
     	Route::get('/checkout',[OrderController::class,'cartCheckout'])->middleware('checkCart');
     	Route::post('/checkout',[OrderController::class,'orderStore'])->name('order.store');
-		Route::post('/dinger-callback', [OrderController::class, 'handleCallback'])->name('dinger.callback');
+		Route::post('/dinger-callback', [OrderController::class, 'dingerCallback'])->name('dinger.callback');
+		Route::get('/success', [OrderController::class, 'success'])->name('payment.success');
+		Route::get('/error', [OrderController::class, 'error'])->name('payment.error');
     });
     
 });

@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Darryldecode\Cart\Facades\CartFacade;
-
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -291,15 +291,15 @@ class OrderController extends Controller
         
 
         $data = [
-            "clientId" => "ad3710c0-c606-3adf-913e-dc6947dbbffe",
-            "publicKey" => "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCgojLWO+ioAWwr+/TxyOS+y0d2aSc/JcWfe33cfm0jbXJG7FPhcBeFnfH9co92kVOcT5gE2Qv1AlGCQQxKVj0CFVJsAGOJ7IEp0zSspGxX1uiu8XiVXygtSxrwuswmOR3dBfg4bJh8gdeFV54LVWrcxdFJNuLWdoAQyre9HETi8wIDAQAB",
+            "clientId" => "f17dd814-0f2f-3a7a-a138-bee3c04c0807",
+            "publicKey" => "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDj32iCJ4wjM9E5zTavXYeIlgi2U0/q7s4JsE6QGmfY3iFaHOtfjmDgFdaeoGK5HJUVd1ScpvCyqGiZbtBRzHjgCCUCV67CO0rEMBrKCCfzM/eTOSwBB8z7Wm4qHJEPnAvY1aNkSAY+OBSQ75VuO1bYWhl5bfuVfMdQhYqmHaqpTQIDAQAB",
             "items" => json_encode($items), 
             "customerName" => $customerName,
             "totalAmount" => $totalAmount,
             "merchantOrderId" => $orderId,
-            "merchantKey" => "2ahm2s2.xNwSyonYq6Wwg7zu84Ouy5Y5jZw",
-            "projectName" => "NRF",
-            "merchantName" => "Ei Ei Khaing"
+            "merchantKey" => "j7utuok.IVWGy2A3OrQlyeBE0AEpqLJJJZ8",
+            "projectName" => "NoReplacementsFound",
+            "merchantName" => "NRF"
         ];
         $publicKey = '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCFD4IL1suUt/TsJu6zScnvsEdLPuACgBdjX82QQf8NQlFHu2v/84dztaJEyljv3TGPuEgUftpC9OEOuEG29z7z1uOw7c9T/luRhgRrkH7AwOj4U1+eK3T1R+8LVYATtPCkqAAiomkTU+aC5Y2vfMInZMgjX0DdKMctUur8tQtvkwIDAQAB-----END PUBLIC KEY-----';
         
@@ -314,9 +314,9 @@ class OrderController extends Controller
         $payloadEncoded = urlencode($payloadBase64);
         
         
-        $secretKey = '950f98bcb8fe98a61431bb2bb88111ca';
+        $secretKey = 'ae1426ff6d0736d31119a3d5168143aa';
         $hashedValue = hash_hmac('sha256', $value, $secretKey);
-        $redirect_url = "https://prebuilt.dinger.asia/?hashValue=$hashedValue&payload=$payloadEncoded";
+        $redirect_url = "https://form.dinger.asia/?hashValue=$hashedValue&payload=$payloadEncoded";
         return redirect($redirect_url);
 
     } catch (\Exception $err) {
@@ -326,60 +326,41 @@ class OrderController extends Controller
         return response()->json(['status_code' => 404, 'message' => 'Fail to order']);
     }
 }
-public function handleCallback(Request $request)
+
+public function dingerCallback(Request $request)
 {
-    $callbackData = $request->all();
-    if ($request->status == "success") {
-        DB::beginTransaction();
-
-        try {
-            $cart = \Cart::getContent();
-            $totalPrice = 0;
-            
-                $totalPrice = \Cart::getTotal();
-                $invoice = new Invoice();
-                $invoice->customer_id = session()->get('customer_uniquekey');
-                $invoice->status = "pending";
-                $invoice->total_price = \Cart::getTotal();
-                $invoice->payment_method = "online";
-                $invoice->fees = 0;
-                $invoice->save();
-
-
-                $delivery_info = new DeliveryInfo();
-                $delivery_info->invoice_id = $invoice->id;
-                $delivery_info->customer_id = session()->get('customer_uniquekey');
-                $delivery_info->country_id = $tempdeli->country_id;
-                $delivery_info->division_id = $tempdeli->division_id;
-                $delivery_info->district_id =$tempdeli->district_id;
-                $delivery_info->township_id = $tempdeli->township_id;
-                $delivery_info->delivery_address = $tempdeli->delivery_address;
-                $delivery_info->recipient_name = $tempdeli->recipient_name;
-                $delivery_info->recipient_phone = $tempdeli->recipient_phone;
-                $delivery_info->save();
-
-                $order = new Order();
-                $order->invoice_id = $invoice->id;
-                $order->customer_id = session()->get('customer_uniquekey');
-                $order->product_id = $temporder->product_id;
-                $order->price = $temporder->price;
-                $order->size = $temporder->size;
-                $order->status = 'pending';
-                $order->save();
-                $this->decreaseStock($order->product_id, $order->size);
-
-            DB::commit();
-            $tempinvoice->delete();
-            $tempdeli->delete();
-            $temporder->delete();
-            return view('cart.success_page');
-        } catch (\Exception $err) {
-            DB::rollBack();
-            return view('cart.error_page');
-        }
+    $paymentResult = $request->input('paymentResult');
+    $checksum = $request->input('checksum');
+    $decryptedPaymentResult = $this->decryptPaymentResult($paymentResult);
+    $computedChecksum = hash('sha256', json_encode($decryptedPaymentResult));
+    if ($computedChecksum !== $checksum) {
+        return response()->json(['status' => 'error', 'message' => 'Checksum verification failed']);
+    }
+    $this->storePaymentData($decryptedPaymentResult);
+    if ($decryptedPaymentResult['transactionStatus'] === 'SUCCESS') {
+        return redirect()->route('success');
     } else {
-        return view('cart.error_page');
+        return redirect()->route('error');
     }
 }
 
+private function decryptPaymentResult($encryptedPaymentResult)
+{
+    dd($encryptedPaymentResult);
+    // $base64Decoded = base64_decode($encryptedPaymentResult);
+    // $encryptionKey = '2855e461a79d46ef637a0cfaae0850c2';
+    // $cipher = 'aes-128-ecb';
+    // $ivLength = openssl_cipher_iv_length($cipher);
+    // $iv = str_repeat("\0", $ivLength);
+    // $decryptedPaymentResult = openssl_decrypt($base64Decoded, $cipher, $encryptionKey, OPENSSL_RAW_DATA|OPENSSL_ZERO_PADDING, $iv);
+
+    // $decryptedPaymentResult = rtrim($decryptedPaymentResult, "\0");
+    // $paymentResultArray = json_decode($decryptedPaymentResult, true);
+    // return $paymentResultArray;
+}
+
+private function storePaymentData($paymentData)
+{
+    dd($paymentData);
+}
 }
