@@ -23,6 +23,7 @@ use App\Http\Controllers\InfoController;
 Route::middleware(['active.check'])->group(function() {Route::get('/', function () {return view('layouts.home');});
 
 Route::get('/shop',[ShopController::class,'index'])->name('shop');
+Route::get('/category/{category}', [ShopController::class, 'showByCategory'])->name('category');
 Route::get('/payment_success',[OrderController::class, 'checkPayment']);
 Route::middleware(['logout'])->group(function() {
 
@@ -49,6 +50,8 @@ Route::middleware(['logout'])->group(function() {
 		Route::get('/account/{id}',[CustomersController::class,'editProfile']);
         Route::put('/storeProfile/{id}',[CustomersController::class,'storeProfile'])->name('storeProfile');
         Route::post('/update-profile', [CustomersController::class, 'updateProfile'])->name('update-profile');
+		Route::get('/address',[CustomersController::class,'editAddress']);
+		Route::put('storeAddress',[CustomersController::class,'storeAddress'])->name('storeAddress');
     	Route::get('/invoice/{id}',[CustomersController::class,'invoice']);
     	Route::get('/order_details/{id}',[CustomersController::class,'order_view']);
     	Route::get('/checkout',[OrderController::class,'cartCheckout'])->middleware('checkCart');

@@ -27,4 +27,10 @@ class ShopController extends Controller
         $categoryList = Category::get();
         return view('shop.shop',compact('productList','categoryList'));
     }
+    public function showByCategory(Category $category)
+    {
+        $productList =Product::where('category_id',$category->id)->paginate(9);
+        $categoryList = Category::all();
+        return view('shop.shop', compact('productList', 'categoryList'));
+    }
 }
