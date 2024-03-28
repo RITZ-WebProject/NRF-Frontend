@@ -54,8 +54,8 @@ Route::middleware(['logout'])->group(function() {
     	Route::get('/checkout',[OrderController::class,'cartCheckout'])->middleware('checkCart');
     	Route::post('/checkout',[OrderController::class,'orderStore'])->name('order.store');
 		Route::post('/dinger-callback', [OrderController::class, 'dingerCallback'])->name('dinger.callback');
-		Route::get('/success', [OrderController::class, 'success'])->name('payment.success');
-		Route::get('/error', [OrderController::class, 'error'])->name('payment.error');
+		Route::get('/success', [OrderController::class, 'success'])->name('success');
+		Route::get('/error', [OrderController::class, 'error'])->name('error');
     });
     
 });
