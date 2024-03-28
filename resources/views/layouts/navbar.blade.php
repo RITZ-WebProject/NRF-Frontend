@@ -11,7 +11,7 @@
                     <div class="main-menu">
                         <nav id="mobile-menu">
                             <ul class="text-center">
-                                <li><a href="{{url('/about')}}" class="text-uppercase">ABOUT US</a></li>
+                                {{-- <li><a href="{{url('/about')}}" class="text-uppercase">ABOUT US</a></li> --}}
                                 <li><a href="{{url('/shop')}}" class="text-uppercase">STORE</a></li>
                                 <li><a href="{{url('/gallery')}}" class="text-uppercase">Gallery</a></li>
                                 @if(session()->get('email'))
@@ -37,7 +37,7 @@
                             <a href="#"><i class="fa fa-bars"></i></a>
                             <div class="menu-settings" style="z-index: 999 !important;">
                                 <ul class="account-settings" style="z-index: 999 !important;">
-                                    <li><a href="{{url('/about')}}" class="text-uppercase">ABOUT US</a></li>
+                                    {{-- <li><a href="{{url('/about')}}" class="text-uppercase">ABOUT US</a></li> --}}
                                     <li><a href="{{url('/shop')}}" class="text-uppercase">STORE</a></li>
                                     <li><a href="{{url('/gallery')}}" class="text-uppercase">Gallery</a></li>
                                     @if(session()->get('email'))

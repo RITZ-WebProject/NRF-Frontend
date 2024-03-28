@@ -38,6 +38,7 @@ class CustomersController extends Controller
         $validator = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string','min:6','max:255'],
+            'confirm_password' => 'required|string|same:password',
             'email' => ['required', 'unique:customers,email', 'email', 'max:255'],
             'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:8|max:11|unique:customers,phone_primary'
         ]);

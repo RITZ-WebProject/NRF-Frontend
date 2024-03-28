@@ -30,7 +30,7 @@
                     <form action="{{route('authenticate')}}" method="POST">
                         @csrf
                       <div class="mb-5">
-                        <input type="email" name="email" class="form-control" id="loginEmail" placeholder="email address" required>
+                        <input type="text" name="email" class="form-control" id="loginEmail" placeholder="email address or phone" required>
                         {{$errors->first('email')}}
                       </div>
                       <div class="mb-5">
