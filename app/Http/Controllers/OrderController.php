@@ -406,5 +406,13 @@ public function dingerCallback(Request $request)
             TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->get()->last()->delete();
             TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->get()->last()->delete();
         }
-    }    
+    }  
+    public function success()
+    {
+        return redirect()->route('success');
+    }  
+    public function error()
+    {
+        return redirect()->route('error');
+    }
 }
