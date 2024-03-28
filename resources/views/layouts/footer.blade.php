@@ -16,7 +16,7 @@ footer {
     gap: 15px;
 }
 p {
-    font-size: 17px;
+    font-size: 16px;
 
 }
 
@@ -130,7 +130,7 @@ p {
         <br>
         <br>
         <br>
-        <p class="text-white pb-5">@2023 No Replacements Found <sup>TM</sup>,All rights reserved.</p>
+        <p class="text-white pb-5">@2023 No Replacements Found<sup>TM</sup>, All rights reserved.</p>
         <br>
     </div>
 </footer>
