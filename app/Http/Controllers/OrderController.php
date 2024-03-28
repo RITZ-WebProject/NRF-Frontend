@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Darryldecode\Cart\Facades\CartFacade;
 use Illuminate\Support\Facades\Log;
+use phpseclib\Crypt\AES;
 
 class OrderController extends Controller
 {
@@ -331,36 +332,79 @@ public function dingerCallback(Request $request)
 {
     $paymentResult = $request->input('paymentResult');
     $checksum = $request->input('checksum');
-    $decryptedPaymentResult = $this->decryptPaymentResult($paymentResult);
-    $computedChecksum = hash('sha256', json_encode($decryptedPaymentResult));
+    $callbackKey = '2855e461a79d46ef637a0cfaae0850c2';
+    $decrypted = openssl_decrypt(base64_decode($paymentResult), 'AES-256-ECB', $callbackKey);
+    $computedChecksum = hash('sha256', $decrypted);
     if ($computedChecksum !== $checksum) {
-        return response()->json(['status' => 'error', 'message' => 'Checksum verification failed']);
+        return "Incorrect signature.";
     }
-    $this->storePaymentData($decryptedPaymentResult);
-    if ($decryptedPaymentResult['transactionStatus'] === 'SUCCESS') {
+    $decryptedValues = json_decode($decrypted, true);
+    $totalAmount = $decryptedValues['totalAmount'];
+    $createdAt = $decryptedValues['createdAt'];
+    $transactionStatus = $decryptedValues['transactionStatus'];
+    $methodName = $decryptedValues['methodName'];
+    $merchantOrderId = $decryptedValues['merchantOrderId'];
+    $transactionId = $decryptedValues['transactionId'];
+    $customerName = $decryptedValues['customerName'];
+    $providerName = $decryptedValues['providerName'];
+
+    // Perform actions based on the transaction status
+    if ($transactionStatus === 'SUCCESS') {
+        DB::beginTransaction();
+        
+        $invoice = new Invoice();
+        $invoice->customer_id = session()->get('customer_uniquekey');
+        $invoice->status = $transactionStatus;
+        $invoice->total_price = $totalAmount;
+        $invoice->payment_method = $providerName;
+        $invoice->fees = 0;
+        $invoice->save();
+
+        $invoiceDetail = TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->get()->last();
+        $delivery=TempDeliInfo::where('invoice_id',$invoiceDetail->id)->get()->last();
+        $delivery_info = new DeliveryInfo();
+        $delivery_info->invoice_id = $invoice->id;
+        $delivery_info->customer_id = $delivery->customer_id;
+        $delivery_info->country_id = $delivery->country_id;
+        $delivery_info->division_id = $delivery->division_id;
+        $delivery_info->district_id = $delivery->district_id;
+        $delivery_info->township_id = $delivery->township_id;
+        $delivery_info->delivery_address = $delivery->delivery_address;
+        $delivery_info->recipient_phone = $delivery->recipient_phone;
+        $delivery_info->recipient_name = $delivery->recipient_name;
+        $delivery_info->save();
+
+        $orders = TempOrderProduct::where('invoice_id', $invoiceDetail->id)->get();
+        foreach ($orders as $orderinfo) {
+            $size = $orderinfo->size . '_quantity';
+            if ($orderinfo->size == "free" || $orderinfo->size == "no") {
+                $size = "small_quantity";
+            }
+            $update_quantity = DB::table('products')->select($size)->where('id', $orderinfo->product_id)->first();
+            if ($update_quantity->$size <= 0) {
+                return redirect()->route('error');
+                DB::rollBack();
+            }
+            $order = new Order();
+            $order->invoice_id = $invoice->id;
+            $order->customer_id = $orderinfo->customer_id;
+            $order->product_id = $orderinfo->product_id;
+            $order->price = $orderinfo->price;
+            $order->size = $orderinfo->size;
+            $order->status = $orderinfo->status;
+            $order->save();
+            $this->decreaseStock($order->product_id,$order->size);
+        }
+        TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->get()->last()->delete();
+        TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->get()->last()->delete();
+        TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->get()->last()->delete();
+
+        DB::commit();
         return redirect()->route('success');
     } else {
-        return redirect()->route('error');
-    }
-}
-
-private function decryptPaymentResult($encryptedPaymentResult)
-{
-    dd($encryptedPaymentResult);
-    // $base64Decoded = base64_decode($encryptedPaymentResult);
-    // $encryptionKey = '2855e461a79d46ef637a0cfaae0850c2';
-    // $cipher = 'aes-128-ecb';
-    // $ivLength = openssl_cipher_iv_length($cipher);
-    // $iv = str_repeat("\0", $ivLength);
-    // $decryptedPaymentResult = openssl_decrypt($base64Decoded, $cipher, $encryptionKey, OPENSSL_RAW_DATA|OPENSSL_ZERO_PADDING, $iv);
-
-    // $decryptedPaymentResult = rtrim($decryptedPaymentResult, "\0");
-    // $paymentResultArray = json_decode($decryptedPaymentResult, true);
-    // return $paymentResultArray;
-}
-
-private function storePaymentData($paymentData)
-{
-    dd($paymentData);
-}
+            TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->get()->last()->delete();
+            TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->get()->last()->delete();
+            TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->get()->last()->delete();
+        }
+    }    
 }
