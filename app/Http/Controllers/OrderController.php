@@ -409,10 +409,10 @@ public function dingerCallback(Request $request)
     }  
     public function success()
     {
-        return redirect()->route('success');
+        return view('cart.success_page');
     }  
     public function error()
     {
-        return redirect()->route('error');
+        return view('cart.error_page');
     }
 }
