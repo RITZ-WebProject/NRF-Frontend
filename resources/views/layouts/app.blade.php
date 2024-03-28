@@ -15,7 +15,7 @@
     <!-- Page Title -->
 	<title>NRF</title>
 	<!--Fevicon-->
-	<link rel="icon" href="{{ asset('assets/img/icon/favicon2.ico') }}" type="image/x-icon" />
+	<link rel="icon" href="{{ asset('assets/img/icon/nrf-logo.PNG') }}" type="image/x-icon" />
 	<!-- Bootstrap css -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <!-- font-awesome -->

@@ -44,6 +44,10 @@
                   {{$errors->first('password')}}
                 </div>
                 <div class="mb-5">
+                  <input type="password" name="confirm_password" class="form-control" id="confirm_password" placeholder="confirm_password" required>
+                  {{$errors->first('confirm_password')}}
+                </div>
+                <div class="mb-5">
                   <input type="tel" name="phone_number" class="form-control" id="phone" placeholder="Phone number" required>
                   {{$errors->first('phone_number')}}
                 </div>

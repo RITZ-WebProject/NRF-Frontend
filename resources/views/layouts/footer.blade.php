@@ -37,6 +37,7 @@ p {
                 <div class="col-md-4 social-icons">
                     <a href="https://www.facebook.com/noreplacementsfound" target="_blank" class="text-white" title="Facebook"><i class="fab fa-facebook"></i></a>
                     <a href="https://www.instagram.com/nrf.online/" target="_blank" class="text-white" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@nrf.tiktok?_t=8l3kt1IV3Pc&_r=1" target="_blank" class="text-white" title="Tiktok"><i class="fab fa-tiktok"></i></a>
                     <i class="fab fa-youtube"></i>
                 </div>
                 <div class="col-md-2">
@@ -98,6 +99,7 @@ p {
                 <div class="col-md-6 social-icons pt-0">
                     <a href="https://www.facebook.com/noreplacementsfound" target="_blank" class="text-white" title="Facebook"><i class="fab fa-facebook"></i></a>
                     <a href="https://www.instagram.com/nrf.online/" target="_blank" class="text-white" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@nrf.tiktok?_t=8l3kt1IV3Pc&_r=1" target="_blank" class="text-white" title="Tiktok"><i class="fab fa-tiktok"></i></a>
                     <i class="fab fa-youtube"></i>
                 </div>
             </div>
