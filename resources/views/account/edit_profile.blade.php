@@ -48,11 +48,12 @@
                 <ul role="tablist" class="nav flex-column dashboard-list">
                     <li><a href="{{ url('/account') }}" class="nav-link text-white">My Profile</a></li>
                     <li><a href="{{ url('/account') }}" class="nav-link text-white active">Orders</a></li>
+                    <li><a href="{{ url('/account') }}" class="nav-link text-white">Addresses</a></li>
                     <li><a href="{{ url('/signout') }}" class="nav-link text-white">logout</a></li>
                 </ul>
             </ul>
         </div>
-       <div class="col-sm-12 col-md-10 col-lg-10" style="background: #fff;height:600px;">
+        <div class="col-sm-12 col-md-10 col-lg-10" style="background: #fff;height:600px;">
                 <div class="card-body">
                     <form action="{{ route('update-profile') }}" method="POST">
                         @csrf

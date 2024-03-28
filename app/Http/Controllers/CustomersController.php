@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Country;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use App\Models\Customers;
 use App\Models\Invoice;
 use App\Models\Newletter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Newsletter;
 use App\Models\Order;
+use App\Models\Product;
 
 class CustomersController extends Controller
 {
     public static function generateCustomerID()
     {
-        $customers = Customer::get()->last();
+        $customers = DB::table('customers')->get()->last();
         $prefix = "NRF-C-";
         if ($customers) {
             $customer_uniquekey = ++$customers->customer_uniquekey;
@@ -41,7 +43,7 @@ class CustomersController extends Controller
         ]);
 
         if ($validator) {
-            $customer = new Customer;
+            $customer = new Customer();
             $customer->customer_name = $request->customer_name;
             $customer->email = $request->email;
             $customer->password = Hash::make($request->password);
@@ -87,7 +89,7 @@ class CustomersController extends Controller
     public function profile()
     {
         $customer_id = session()->get('customer_uniquekey');
-        $account = Customer::where('customers.id', '=', $customer_id)->first();
+        $account = DB::table('customers')->where('customers.id', '=', $customer_id)->first();
         $addresses = DB::table('customers')
             ->leftJoin('countries','countries.name', '=', 'customers.country_id')
             ->leftJoin('tbl_divisions', 'tbl_divisions.id', '=', 'customers.division_id')
@@ -103,12 +105,12 @@ class CustomersController extends Controller
             ->orderBy('invoices.created_at', 'desc')
             ->latest('invoices.created_at')
             ->get();
-        $countries = Country::get();
+        $countries = DB::table('countries')->get();
         $divisions = DB::table('tbl_divisions')->orderby('division_name')->select('division_name', 'id')->get();
         $districts = DB::table('tbl_districts')->get();
         $townships = DB::table('tbl_townships')->get();
 
-        $invoices = Invoice::where('invoices.customer_id', $customer_id)->get();
+        $invoices = DB::table('invoices')->where('invoices.customer_id', $customer_id)->get();
 
         $invoice_info = DB::table('invoices')
             ->leftJoin('delivery_info', 'delivery_info.customer_id', 'invoices.customer_id')
@@ -122,9 +124,24 @@ class CustomersController extends Controller
         $customer_id = session()->get('customer_uniquekey');
         $password = session()->get('password');
 
-        $customer = Customer::where('id', '=', $customer_id)->first();
+        $customer = DB::table('customers')->where('id', '=', $customer_id)->first();
 
         return view('account.edit_profile', compact('customer', 'password'));
+    }
+    public function editAddress()
+    {
+        $addresses = DB::table('customers')
+            ->leftJoin('countries','countries.name', '=', 'customers.country_id')
+            ->leftJoin('tbl_divisions', 'tbl_divisions.id', '=', 'customers.division_id')
+            ->leftJoin('tbl_districts', 'tbl_districts.id', '=', 'customers.district_id')
+            ->leftJoin('tbl_townships', 'tbl_townships.id', '=', 'customers.township_id')
+            ->where('customers.id', session()->get('customer_uniquekey'))
+            ->first();
+        $countries = DB::table('countries')->get();
+        $divisions = DB::table('tbl_divisions')->orderby('division_name')->select('division_name', 'id')->get();
+        $districts = DB::table('tbl_districts')->get();
+        $townships = DB::table('tbl_townships')->get();
+        return view('account.address', compact('addresses','countries','divisions','districts','townships'));
     }
     public function storeProfile(Request $request, $id)
     {
@@ -134,7 +151,7 @@ class CustomersController extends Controller
         ]);
 
         if ($validator) {
-            $test=Customer::where('id', $customer_id)->update([
+            $test=DB::table('customers')->where('id', $customer_id)->update([
                 'customer_name' => $request->customer_name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
@@ -183,7 +200,7 @@ class CustomersController extends Controller
 }
     public function getOrderHistory()
     {
-        $orders = Invoice::where("invoices.customer_id", '=', session()->get('customer_uniquekey'));
+        $orders = DB::table("invoices")->where("invoices.customer_id", '=', session()->get('customer_uniquekey'));
         return view('account.my-account', compact($orders));
     }
 
@@ -213,6 +230,7 @@ class CustomersController extends Controller
 
     public function newsletter_signup(Request $request)
     {
+        //dd($request);
         $validator = $request->validate([
             'email' => 'required|email|unique:newsletter,email'
         ]);

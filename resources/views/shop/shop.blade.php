@@ -11,13 +11,40 @@
     @endif
 
     <style>
-        .container {
-            padding-top: 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .category-list {
+             list-style: none;
+             padding: 0;
+         }
+ 
+         .category-item {
+             display: inline-block;
+             margin-right: 10px; 
+         }
+ 
+         .category-link {
+             text-decoration: none;
+             color: white;
+             background-color: black;
+             padding: 8px 12px; /* Adjust padding for better spacing */
+             border-radius: 5px; /* Add rounded corners */
+         }
+ 
+         .category-link:hover {
+             background-color: darkslategray; /* Change color on hover */
+         }
+ 
+ 
+         .hero {
+             padding-top: 20px;
+             margin: 0 auto;
+             
+         }
 
         @media (min-width: 769px) {
+        .hero{
+             padding-left: 70px;
+             padding-right: 70px;
+         }
         .custom-image {
             position: relative;
             padding-top: 0;
@@ -199,7 +226,23 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="hero" style="background-color: #fff;">
+        @forelse ($productList as $key => $products)
+        <div class="text-center pt-5">
+             <ul class="category-list">
+                 <li class="category-item">
+                     <a href="{{ route('shop') }}" class="category-link">All</a>
+                 </li>
+                 @foreach($categoryList as $category)
+                     <li class="category-item">
+                         <a href="{{ route('category', $category) }}" class="category-link">{{ $category->name }}</a>
+                     </li>
+                 @endforeach
+             </ul>
+         </div>
+         @empty
+         @endforelse
+         
         <div class="row" style="padding-top:100px;padding-bottom:100px;">
             @forelse ($productList as $key => $products)
                 <div class="col-md-3 col-6">
@@ -227,11 +270,11 @@
                 <div class="container product">
                   <div class="row justify-content-center">
                     <div class="col-md-12 text-center">
-                      <div class="card text-white" style="background: #000; border: none;">
+                      <div class="card text-black" style="background: #fff; border: none;">
                         <div class="card-body">
-                            <h4 class="text-white">No products available</h4>
-                            <h4 class="text-white">Thank you for visiting the NRF Website</h4>
-                            <h4 class="text-white">We look forward to welcoming you again on your next visit!</h4>
+                            <h4 class="text-black">No products available</h4>
+                            <h4 class="text-black">Thank you for visiting the NRF Website</h4>
+                            <h4 class="text-black">We look forward to welcoming you again on your next visit!</h4>
                         </div>
                       </div>
                     </div>
@@ -352,10 +395,7 @@
         }
         $(document).ready(function () {
             $('.bg-image').click(function () {
-                // Get the clicked image source
                 var imageSrc = $(this).find('img').attr('src');
-    
-                // Update the modal's image source
                 $('#exampleModal .primary-img').attr('src', imageSrc);
             });
         });
@@ -363,9 +403,8 @@
     
  @endsection
  @section('footer')
- @include('layouts.footer', ['footerColor' => 'blue'])
+ @include('layouts.footer', ['footerColor' => 'black'])
  @endsection
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
  
-
  

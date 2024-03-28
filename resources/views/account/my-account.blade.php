@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 @section('content')
 <style>
@@ -48,6 +47,7 @@
                 <ul role="tablist" class="nav flex-column dashboard-list text-center">
                     <li><a href="#account-details" data-bs-toggle="tab" class="nav-link active text-white">My Profile</a></li>
                     <li><a href="#orders" data-bs-toggle="tab" class="nav-link text-white">Orders</a></li>
+                    <li><a href="#address" data-bs-toggle="tab" class="nav-link text-white">Addresses</a></li>
                     <li><a href="{{url('/signout')}}" class="nav-link text-white">logout</a></li>
                 </ul>
         </div>
@@ -125,6 +125,34 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane text-black test" id="address">
+                    <h3 class="billing-address">Billing address</h3>
+                    <h6 class="mb-4">-- The following address will be used on the checkout page by default.</h6>
+                    <div class="login">
+                        <div class="login_form_container">
+                            <div class="account_login_form">
+                                <div class="container">
+                                    <div class="col-md-5">
+                                        <div class="address-info">
+                                            <p class="text-dark mb-2"><strong>Country:</strong> {{$addresses->name}}</p>
+                                            <p class="text-dark mb-2"><strong>Division:</strong> {{$addresses->division_name}}</p>
+                                            <p class="text-dark mb-2"><strong>District:</strong> {{$addresses->district_name}}</p>
+                                            <p class="text-dark mb-2"><strong>Township:</strong> {{$addresses->township_name}}</p>
+                                            <p class="text-dark mb-2"><strong>Street:</strong> {{$addresses->street_name}}</p>
+                                            <p class="text-dark mb-2"><strong>Home No:</strong> {{$addresses->home_no}}</p>
+                                        </div>
+                                        <a href="address/">
+                                            <button class="btn btn-sm text-uppercase text-white" style="background: #0000ff;">
+                                                <i class="fa fa-pencil"></i> Edit Address
+                                            </button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-pane fade show active test" id="account-details">
@@ -314,8 +342,5 @@
                         updateDeliveryAddress();
                     }
                 });  
-@endsection
-@section('footer')
-@include('layouts.footer', ['footerColor' => 'blue'])
 @endsection
 

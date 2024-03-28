@@ -1,144 +1,73 @@
-
 @extends('layouts.app')
+
 @section('content')
+<style>
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid with minimum item width of 200px */
+        gap: 20px;
+        margin: 0 auto; /* Center the grid horizontally */
+        padding: 100px 20px; /* Add space to the left and right */
+    }
 
-    <style type="text/css">
-        ul{
-            margin:0;
-            padding: 0;
-            list-style: none;
+    .photo {
+        position: relative; /* For animation */
+        overflow: hidden; /* For animation */
+        cursor: pointer; /* Show pointer cursor on hover */
+    }
+
+    .photo img {
+        width: 100%; /* Make images fill the entire container */
+        height: auto; /* Maintain aspect ratio */
+        transition: transform 0.3s ease; /* Smooth transition on hover */
+    }
+
+    .photo:hover img {
+        transform: scale(1.1); /* Scale up image on hover */
+        filter: brightness(80%); /* Reduce brightness on hover */
+    }
+
+    @media (min-width: 768px) {
+        .photo-grid {
+            grid-template-columns: repeat(4, 1fr); /* Show 4 photos per row on desktop */
         }
+    }
 
-        a{
-            color: #333;
+    @media (max-width: 767px) {
+        .photo-grid {
+            padding: 50px 20px; /* Adjust padding for smaller screens */
         }
+    }
+</style>
 
-        a:hover,
-        a:active{
-            text-decoration: none;
-        }
-
-        h1{
-            text-align: center;
-            font-size:6vw;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin:30px 0;
-        }
-
-        p{
-            margin:0 10px 10px 10px;
-            word-wrap : break-word;
-        }
-
-        .flipLeft{
-            animation-name: flipLeft;
-            animation-duration:0.5s;
-            animation-fill-mode:forwards;
-            perspective-origin: left center;
-            opacity: 0;
-        }
-
-        #banner{
-            height:800px;
-        }
-
-        #banner_text{
-            position: absolute;
-            bottom:50%;
-            left:0px;
-            font-size:25px;
-            color:aliceblue;
-            text-align: center;
-            width:100%;
-
-        }
-
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            grid-gap: 10px;
-        }
-
-        .image {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .image img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .image:hover img {
-            transform: scale(1.1);
-        }
-
-        .image img:hover {
-            cursor: pointer;
-        }
-
-        .image img:focus {
-            outline: none;
-        }
-
-        .image img::selection {
-            background-color: transparent;
-        }
-
-        .image img::-moz-selection {
-            background-color: transparent;
-        }
-
-        @media screen and (max-width: 680px) {
-            #banner{
-                height:450px;
-            }
-
-            #banner_text{
-                bottom:10%;
-            }
-        }
-
-        @keyframes flipLeft{
-            from {
-                transform: perspective(600px) translate3d(0, 0, 0) rotateY(30deg);
-                opacity: 0;
-            }
-
-            to {
-                transform: perspective(600px) translate3d(0, 0, 0) rotateY(0deg);
-                opacity: 1;
-            }
-        }
-    </style>
-</head>
-<body class="about" style="background: black;" >
-
-    <div style="position: relative">
-        <img style="width:100%;object-fit: cover; margin:20px 20px;" id="banner"  src="{{ asset('/assets/img/bg/gallary_banner.png') }}" id="about_logo" alt="Your Logo">
-        <div  id="banner_text">
-            <h4 style="text-align: center">Heavy Weight Boxy Basics</h4>
-            <h4 style="text-align: center">Material : 100% Heavy Weight Cotton</h4>
-            <p  style="font-size: 17px;margin-top:30px;color:aliceblue;text-align: center;">These pieces of clothing express young agility, freedom, and culture, allowing any youngster whoever wears them to express themselves properly. </p>
+<body>
+    @if ($photos->isEmpty())
+        <div class="product">
+            <div class="row justify-content-center">
+              <div class="col-md-12 text-center">
+                <div class="card text-black" style="background: #fff; border: none;">
+                  <div class="card-body">
+                      <h4 class="text-black">No photos available</h4>
+                      <h4 class="text-black">Thank you for visiting the NRF Website</h4>
+                      <h4 class="text-black">We look forward to welcoming you again on your next visit!</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        @else
+    <div class="photo-grid" style="background-color: #fff">
+        @foreach($photos as $photo)
+        <div class="photo">
+            <img src="{{ env('Gallary_URL').$photo->photo_url }}" alt="Image">
         </div>
+        @endforeach
     </div>
-
-    <div class="wrapper" style="margin-left:100px;margin-right:100px;" >
-        <div class="gallery" style="margin-bottom: 20px;">
-            @foreach($photos as $photo)
-                <span class="image">
-                    <img style="border-radius: 5%" src="{{ env('Gallary_URL').$photo->photo_url }}"  alt="Image 1">
-                </span>
-            @endforeach
-
-        </div>
-
-    </div>
+    @endif
 </body>
+
 @endsection
+
 @section('footer')
 @include('layouts.footer', ['footerColor' => 'black'])
 @endsection
