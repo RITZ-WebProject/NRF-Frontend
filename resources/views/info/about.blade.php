@@ -220,7 +220,9 @@
       <div class="col-lg-12">
         <div class="col-lg-8">
           <img src="{{ asset('/assets/img/aboutus/2.png') }}" id="about_logo" alt="Your Logo">
-          <h3 class="text-black text-justify" style="clear: both;" id="about_text">NRF was registered on 12th January 2022 and we started our business on 22nd. We introduced our brand at Another Club pop-up stores and there, people started knowing us. Our second pop-up store was in Level 2. As a start-up brand, we carefully emphasize the quality to give our customers the best.</h3>
+          <h3 class="text-black text-justify" style="clear: both;" id="about_text">
+            NRF™ isn’t just a brand - It’s a philosophy woven into every product we create. Embracing the notion that excellence knows no substitute, our brand has redefined the standard. Each item carries a commitment to unparalleled quality, making us the epitome of durability and craftsmanship.
+          </h3>
         </div>
       </div>
     </div>

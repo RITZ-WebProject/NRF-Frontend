@@ -198,7 +198,7 @@
     }
     </style>
 </head>
-<body style="background-color: black;">
+<body>
     <div class="container">
         <div class="row" style="padding-top:100px;padding-bottom:100px;">
             @forelse ($productList as $key => $products)
@@ -365,8 +365,6 @@
  @section('footer')
  @include('layouts.footer', ['footerColor' => 'blue'])
  @endsection
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js">
- </script>
  
 
  
