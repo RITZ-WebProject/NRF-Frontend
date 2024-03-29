@@ -343,6 +343,8 @@ class OrderController extends Controller
 
 public function dingerCallback(Request $request)
 {
+    Log::info('Received callback from Dinger:', $request->all());
+
     $paymentResult = $request->input('paymentResult');
     $checksum = $request->input('checksum');
     $callbackKey = '2855e461a79d46ef637a0cfaae0850c2';
@@ -365,8 +367,8 @@ public function dingerCallback(Request $request)
     $providerName = $decryptedValues['providerName'];
 
     // Perform actions based on the transaction status
-    if ($transactionStatus === 'SUCCESS') {
-        DB::beginTransaction();
+    if ($transactionStatus) {
+        // DB::beginTransaction();
         
         $invoice = new Invoice();
         $invoice->customer_id = session()->get('customer_uniquekey');
@@ -399,7 +401,7 @@ public function dingerCallback(Request $request)
             }
             $update_quantity = DB::table('products')->select($size)->where('id', $orderinfo->product_id)->first();
             if ($update_quantity->$size <= 0) {
-                DB::rollBack();
+                // DB::rollBack();
                 return view('cart.error_page');
             }
             $order = new Order();
@@ -417,7 +419,7 @@ public function dingerCallback(Request $request)
         TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
         TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
 
-        DB::commit();
+        // DB::commit();
         return view('cart.success_page');
     } else {
         TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
