@@ -227,7 +227,7 @@
 </head>
 <body>
     <div class="hero" style="background-color: #fff;">
-        @forelse ($productList as $key => $products)
+        @if (!$productList->isEmpty())
         <div class="text-center pt-5">
              <ul class="category-list">
                  <li class="category-item">
@@ -240,8 +240,7 @@
                  @endforeach
              </ul>
          </div>
-         @empty
-         @endforelse
+        @endif
          
         <div class="row" style="padding-top:100px;padding-bottom:100px;">
             @forelse ($productList as $key => $products)
