@@ -254,7 +254,7 @@
                             <div class="mask" style="background-color: hsla(217, 89%, 51%, 0.5) !important;"></div>
                         </a>
                     </div>
-                    <p class="item-description text-white">
+                    <p class="item-description text-black">
                         {{ $products->product_name }} <br>{{ number_format($products->price, 0, ',') }}({{ number_format($products->dollor, 0, ',') }}$)
                     </p>
                 </div>
@@ -311,8 +311,8 @@
                                                 <li><a class="dropdown-item" style="color: white;font-weight: 400;" href="#" onclick="setSize('Medium', {{$key}})">Medium</a></li>
                                                 <li><a class="dropdown-item" href="#" style="font-weight: 600; color: white;" onclick="setSize('Large', {{$key}})">Large</a></li>
                                                 <li><a class="dropdown-item" href="#" style="font-weight: 700; color: white;" onclick="setSize('XLarge', {{$key}})">XLarge</a></li>
-                                                <li><a class="dropdown-item" href="#" style="font-weight: 800; color: white;" onclick="setSize('XXLarge', {{$key}})">XXLarge</a></li>
-                                                <li><a class="dropdown-item" href="#" style="font-weight: 900; color: white;" onclick="setSize('XXXLarge', {{$key}})">XXXLarge</a></li>
+                                                {{-- <li><a class="dropdown-item" href="#" style="font-weight: 800; color: white;" onclick="setSize('XXLarge', {{$key}})">XXLarge</a></li>
+                                                <li><a class="dropdown-item" href="#" style="font-weight: 900; color: white;" onclick="setSize('XXXLarge', {{$key}})">XXXLarge</a></li> --}}
                                             </ul>
                                         </div>
                                     </div>
@@ -390,7 +390,7 @@
                 .replace(':id', id)
                 .replace(':size', selectedSize);
 
-            alert(`Added ${productName} in size ${selectedSize} to the cart.`);
+            alert(`Added ${productName} + ${selectedSize} is added to your cart.`);
         }
         $(document).ready(function () {
             $('.bg-image').click(function () {

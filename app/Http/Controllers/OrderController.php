@@ -412,7 +412,7 @@ public function dingerCallback(Request $request)
             $order->save();
             $this->decreaseStock($order->product_id, $order->size);
         }
-
+        
         TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
         TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
         TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
