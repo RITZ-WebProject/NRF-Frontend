@@ -58,6 +58,23 @@ class OrderController extends Controller
 
         $userId = session()->get('customer_uniquekey');
         $product = DB::table('products')->where('products.id', '=', $id)->first();
+
+        $existingOrder = Order::where('customer_id', $userId)
+        ->where('product_id', $id)
+        ->whereDate('created_at', today())
+        ->first();
+        if ($existingOrder) {
+            return redirect()->back()->with('error', 'You have already ordered this product today.');
+        }
+
+        $cartItems = \Cart::getContent();
+        foreach ($cartItems as $cartItem) {
+            $existingProduct = DB::table('products')->where('products.id', '=', $cartItem->id)->first();
+            if ($existingProduct->category_id == $product->category_id) {
+                return redirect()->back()->with('error', 'You can only add one item from this category.');
+            }
+        }
+
         if (\Cart::get($id) === null) {
             \Cart::add([
                 'id' => $id,
@@ -75,16 +92,12 @@ class OrderController extends Controller
                     'xxxlarge_quantity' => $product->xxxlarge_quantity,
                     'dollor' => $product->dollor
                 )
-
             ]);
-
             Session::put('cart_time', now());
         } else {
             return redirect()->back()->with('error', 'Item already in cart');
         }
-
         return redirect()->back()->with('info', 'Product added to cart successfully!');
-
     }
 
 
@@ -417,104 +430,104 @@ public function dingerCallback(Request $request)
         return view('cart.error_page');
     }
 
-    public function checkPayment(Request $request)
-    {
-        $url = "https://api.kbzpay.com/payment/gateway/queryorder";
+    // public function checkPayment(Request $request)
+    // {
+    //     $url = "https://api.kbzpay.com/payment/gateway/queryorder";
 
-        $timeStamp = time();
-        $nonceStr = $this->generateRandomString();
-        $merch_order_id = $request->merch_order_id;
+    //     $timeStamp = time();
+    //     $nonceStr = $this->generateRandomString();
+    //     $merch_order_id = $request->merch_order_id;
 
-        $stringA = "appid=kp81a3303eb48343ed990ffa97a0ebb7&merch_code=200277&merch_order_id=" . $merch_order_id . "&method=kbz.payment.queryorder&nonce_str=" . $nonceStr . "&timestamp=" . $timeStamp . "&version=3.0&key=fd8d884e3b5ac31bb86fc3622ef57e0d";
+    //     $stringA = "appid=kp81a3303eb48343ed990ffa97a0ebb7&merch_code=200277&merch_order_id=" . $merch_order_id . "&method=kbz.payment.queryorder&nonce_str=" . $nonceStr . "&timestamp=" . $timeStamp . "&version=3.0&key=fd8d884e3b5ac31bb86fc3622ef57e0d";
 
 
-        $sign = strtoupper(hash("SHA256", $stringA));
-        // Prepare the request data
-        $data = array(
-            'Request' => array(
-                'timestamp' => $timeStamp,
-                'nonce_str' => $nonceStr,
-                'method' => 'kbz.payment.queryorder',
-                'sign_type' => 'SHA256',
-                'sign' => $sign,
-                'version' => '3.0',
-                'biz_content' => array(
-                    'appid' => 'kp81a3303eb48343ed990ffa97a0ebb7',
-                    'merch_code' => '200277',
-                    'merch_order_id' => $merch_order_id
-                )
-            )
-        );
+    //     $sign = strtoupper(hash("SHA256", $stringA));
+    //     // Prepare the request data
+    //     $data = array(
+    //         'Request' => array(
+    //             'timestamp' => $timeStamp,
+    //             'nonce_str' => $nonceStr,
+    //             'method' => 'kbz.payment.queryorder',
+    //             'sign_type' => 'SHA256',
+    //             'sign' => $sign,
+    //             'version' => '3.0',
+    //             'biz_content' => array(
+    //                 'appid' => 'kp81a3303eb48343ed990ffa97a0ebb7',
+    //                 'merch_code' => '200277',
+    //                 'merch_order_id' => $merch_order_id
+    //             )
+    //         )
+    //     );
 
-        // return response()->json([$sign, $stringA]);
+    //     // return response()->json([$sign, $stringA]);
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-        ])->post($url, $data);
+    //     $response = Http::withHeaders([
+    //         'Content-Type' => 'application/json',
+    //     ])->post($url, $data);
 
-        $decodeResponse = json_decode($response->body())->Response;
-        $customerid = session()->get('customer_uniquekey'); 
-        if ($decodeResponse->result === "SUCCESS") {
-	    DB::beginTransaction();
-            $invoiceDetail = TempInvoice::where('merchant_order_id', $request->merch_order_id)->get()->last();
-	    $invoice = new Invoice();
-            $invoice->customer_id = $invoiceDetail->customer_id;
-            $invoice->status = $invoiceDetail->status;
-            $invoice->total_price = $invoiceDetail->total_price;
-            $invoice->payment_method = 'kpay';
-            $invoice->save();
-	    $delivery=TempDeliInfo::where('invoice_id',$invoiceDetail->id)->get()->last();
-            //dd($delivery);
-            $delivery_info = new DeliveryInfo();
-            $delivery_info->invoice_id = $invoice->id;
-            $delivery_info->customer_id = $delivery->customer_id;
-            $delivery_info->division_id = $delivery->division_id;
-            $delivery_info->district_id = $delivery->district_id;
-            $delivery_info->township_id = $delivery->township_id;
-            $delivery_info->delivery_address = $delivery->delivery_address;
-            $delivery_info->recipient_phone = $delivery->recipient_phone;
-            $delivery_info->recipient_name = $delivery->recipient_name;
-            $delivery_info->save();
+    //     $decodeResponse = json_decode($response->body())->Response;
+    //     $customerid = session()->get('customer_uniquekey'); 
+    //     if ($decodeResponse->result === "SUCCESS") {
+	//     DB::beginTransaction();
+    //         $invoiceDetail = TempInvoice::where('merchant_order_id', $request->merch_order_id)->get()->last();
+	//     $invoice = new Invoice();
+    //         $invoice->customer_id = $invoiceDetail->customer_id;
+    //         $invoice->status = $invoiceDetail->status;
+    //         $invoice->total_price = $invoiceDetail->total_price;
+    //         $invoice->payment_method = 'kpay';
+    //         $invoice->save();
+	//     $delivery=TempDeliInfo::where('invoice_id',$invoiceDetail->id)->get()->last();
+    //         //dd($delivery);
+    //         $delivery_info = new DeliveryInfo();
+    //         $delivery_info->invoice_id = $invoice->id;
+    //         $delivery_info->customer_id = $delivery->customer_id;
+    //         $delivery_info->division_id = $delivery->division_id;
+    //         $delivery_info->district_id = $delivery->district_id;
+    //         $delivery_info->township_id = $delivery->township_id;
+    //         $delivery_info->delivery_address = $delivery->delivery_address;
+    //         $delivery_info->recipient_phone = $delivery->recipient_phone;
+    //         $delivery_info->recipient_name = $delivery->recipient_name;
+    //         $delivery_info->save();
 	
-            //dd($delivery_info->save());
-            $orders = TempOrderProduct::where('invoice_id', $invoiceDetail->id)->get();
-            foreach ($orders as $orderinfo) {
-		//size check start--------
-                $size = $orderinfo->size . '_quantity';
-                if ($orderinfo->size == "free" || $orderinfo->size == "no") {
-                    $size = "small_quantity";
-                }
-                //dd($size);
-                $update_quantity = DB::table('products')->select($size)->where('id', $orderinfo->product_id)->first();
-		//dd($update_quantity);
-                if ($update_quantity->$size <= 0) {
-                    return view('cart.error_page');
-		    DB::rollBack();
-		    //DB::table('products')->where('id', $orderinfo->product_id)->increment($size);
-                }
-		//DB::table('products')->where('id', $orderinfo->product_id)->increment($size);
-                //size check end-----
-                $order = new Order();
-                $order->invoice_id = $invoice->id;
-                $order->customer_id = $orderinfo->customer_id;
-                $order->product_id = $orderinfo->product_id;
-                $order->price = $orderinfo->price;
-                $order->size = $orderinfo->size;
-                $order->status = $orderinfo->status;
-                $order->save();
-                $this->decreaseStock($order->product_id,$order->size);
-            }
-            TempOrderProduct::where('customer_id', $customerid)->delete();
-            TempDeliInfo::where('customer_id', $customerid)->delete();
-            TempInvoice::where('customer_id', $customerid)->delete();
+    //         //dd($delivery_info->save());
+    //         $orders = TempOrderProduct::where('invoice_id', $invoiceDetail->id)->get();
+    //         foreach ($orders as $orderinfo) {
+	// 	//size check start--------
+    //             $size = $orderinfo->size . '_quantity';
+    //             if ($orderinfo->size == "free" || $orderinfo->size == "no") {
+    //                 $size = "small_quantity";
+    //             }
+    //             //dd($size);
+    //             $update_quantity = DB::table('products')->select($size)->where('id', $orderinfo->product_id)->first();
+	// 	//dd($update_quantity);
+    //             if ($update_quantity->$size <= 0) {
+    //                 return view('cart.error_page');
+	// 	    DB::rollBack();
+	// 	    //DB::table('products')->where('id', $orderinfo->product_id)->increment($size);
+    //             }
+	// 	//DB::table('products')->where('id', $orderinfo->product_id)->increment($size);
+    //             //size check end-----
+    //             $order = new Order();
+    //             $order->invoice_id = $invoice->id;
+    //             $order->customer_id = $orderinfo->customer_id;
+    //             $order->product_id = $orderinfo->product_id;
+    //             $order->price = $orderinfo->price;
+    //             $order->size = $orderinfo->size;
+    //             $order->status = $orderinfo->status;
+    //             $order->save();
+    //             $this->decreaseStock($order->product_id,$order->size);
+    //         }
+    //         TempOrderProduct::where('customer_id', $customerid)->delete();
+    //         TempDeliInfo::where('customer_id', $customerid)->delete();
+    //         TempInvoice::where('customer_id', $customerid)->delete();
 
-	    DB::commit();
-            return view('cart.success_page');
-        } else {
-	    DB::table('products')->where('id', $orderinfo->product_id)->increment($size);
-            TempOrderProduct::where('customer_id', $customerid)->delete();
-            TempDeliInfo::where('customer_id', $customerid)->delete();
-            TempInvoice::where('customer_id', $customerid)->delete();
-        }
-    }
+	//     DB::commit();
+    //         return view('cart.success_page');
+    //     } else {
+	//     DB::table('products')->where('id', $orderinfo->product_id)->increment($size);
+    //         TempOrderProduct::where('customer_id', $customerid)->delete();
+    //         TempDeliInfo::where('customer_id', $customerid)->delete();
+    //         TempInvoice::where('customer_id', $customerid)->delete();
+    //     }
+    // }
 }
