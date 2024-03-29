@@ -56,7 +56,7 @@ Route::middleware(['logout'])->group(function() {
     	Route::get('/order_details/{id}',[CustomersController::class,'order_view']);
     	Route::get('/checkout',[OrderController::class,'cartCheckout'])->middleware('checkCart');
     	Route::post('/checkout',[OrderController::class,'orderStore'])->name('order.store');
-		Route::post('/dinger-callback', [OrderController::class, 'dingerCallback'])->middleware('api');
+		Route::post('/dinger-callback', [OrderController::class, 'dingerCallback']);
 		Route::get('/success', [OrderController::class, 'success'])->name('success');
 		Route::get('/error', [OrderController::class, 'error'])->name('error');
     });
