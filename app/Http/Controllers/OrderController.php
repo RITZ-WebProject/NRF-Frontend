@@ -257,6 +257,35 @@ class OrderController extends Controller
         $delivery_info->recipient_phone = $request->recipient_phone;
         $delivery_info->save();
 
+        // foreach ($cart as $carts) {
+        //     if(!$this->checkInStock($carts)) {
+        //         $invoice->total_price -= $carts->price;
+        //         $invoice->save();
+        //         \Cart::remove($carts->id);
+        //         DB::rollBack();
+        //         return response()->json(['status_code' => 404, 'message' => 'out of stock']);
+        //         return redirect()->back()->with('error', 'Item is out of stock');
+
+        //     } else {
+        //         if (DB::table('ordered_products')->where('customer_id', session()->get('customer_uniquekey'))->where('product_id', $carts->id)->first()) 
+        //         {
+        //             \Cart::remove($carts->id);
+        //             DB::rollBack();
+        //             return response()->json(['status_code' => 403, 'message' => 'you have already ordered this product.']);
+        //         }
+        //         $order = new TempOrderProduct();
+        //         $order->invoice_id = $invoice->id;
+        //         $order->customer_id = session()->get('customer_uniquekey');
+        //         $order->product_id = $carts->id;
+        //         $order->price = $carts->price;
+        //         $order->size = $carts->attributes['size'];
+        //         $order->status = 'pending';
+        //         $order->save();
+        //     }
+        // }
+        $totalAmount = 0;
+        $items = []; 
+
         foreach ($cart as $carts) {
             if(!$this->checkInStock($carts)) {
                 $invoice->total_price -= $carts->price;
@@ -265,10 +294,8 @@ class OrderController extends Controller
                 DB::rollBack();
                 return response()->json(['status_code' => 404, 'message' => 'out of stock']);
                 return redirect()->back()->with('error', 'Item is out of stock');
-
             } else {
-                if (DB::table('ordered_products')->where('customer_id', session()->get('customer_uniquekey'))->where('product_id', $carts->id)->first()) 
-                {
+                if (DB::table('ordered_products')->where('customer_id', session()->get('customer_uniquekey'))->where('product_id', $carts->id)->first()) {
                     \Cart::remove($carts->id);
                     DB::rollBack();
                     return response()->json(['status_code' => 403, 'message' => 'you have already ordered this product.']);
@@ -281,27 +308,40 @@ class OrderController extends Controller
                 $order->size = $carts->attributes['size'];
                 $order->status = 'pending';
                 $order->save();
+
+                // Add product details to the items array
+                $product = Product::find($carts->id);
+                if ($product) {
+                    $items[] = [
+                        'name' => $product->product_name,
+                        'amount' => $order->price,
+                        'quantity' => 1,
+                    ];
+                } else {
+                dd('Product not found');
+                }
+                $totalAmount += $carts->price;
             }
         }
 
         \Cart::clear();
         DB::commit();
 
-        $totalAmount = $invoice->total_price;
+        // $totalAmount = $invoice->total_price;
         $orderId=$invoice->id;
         $customerName=$delivery_info->recipient_name;
-        $product = Product::find($order->product_id);
-        if ($product) {
-            $items = [
-                [
-                    'name' => $product->product_name,
-                    'amount' => $order->price,
-                    'quantity' => 1,
-                ]
-            ];
-        } else {
-           dd('hit');
-        }
+        // $product = Product::find($order->product_id);
+        // if ($product) {
+        //     $items = [
+        //         [
+        //             'name' => $product->product_name,
+        //             'amount' => $order->price,
+        //             'quantity' => 1,
+        //         ]
+        //     ];
+        // } else {
+        //    dd('hit');
+        // }
         
 
         $data = [
