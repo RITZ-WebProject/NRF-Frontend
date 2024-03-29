@@ -18,6 +18,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/dinger-callback', [OrderController::class, 'dingerCallback'])->name('dinger.callback');
+Route::post('/dinger-callback', [OrderController::class, 'dingerCallback'])->name('dinger.callback')->middleware('api');
 Route::get('/success', [OrderController::class, 'success'])->name('success');
 Route::get('/error', [OrderController::class, 'error'])->name('error');
