@@ -353,6 +353,7 @@ public function dingerCallback(Request $request)
         return "Incorrect signature.";
     }
     $decryptedValues = json_decode($decrypted, true);
+    return $decryptedValues;
     $totalAmount = $decryptedValues['totalAmount'];
     $createdAt = $decryptedValues['createdAt'];
     $transactionStatus = $decryptedValues['transactionStatus'];
