@@ -26,7 +26,7 @@ class ContactUsController extends Controller
         ];
 
         // Send email to the owner
-        Mail::to('eek752000@gmail.com')->send(new ContactUsMail($data));
+        Mail::to('inquiry@noreplacementsfound.com')->send(new ContactUsMail($data));
 
         // Flash a success message to the session
         Session::flash('success', 'Your message was successfully sent to NRF Admin. Thank you for your message!');
