@@ -307,7 +307,7 @@
                                                 <i id="chevronIcon{{$key}}" class="fa-solid fa-chevron-down white-chevron" style="float: right; font-size: 20px;"></i>
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{$key}}">
-                                                <li><a class="dropdown-item" style="color: white;" href="#" onclick="setSize('Small', {{$key}})">Small</a></li>
+                                                {{-- <li><a class="dropdown-item" style="color: white;" href="#" onclick="setSize('Small', {{$key}})">Small</a></li> --}}
                                                 <li><a class="dropdown-item" style="color: white;font-weight: 400;" href="#" onclick="setSize('Medium', {{$key}})">Medium</a></li>
                                                 <li><a class="dropdown-item" href="#" style="font-weight: 600; color: white;" onclick="setSize('Large', {{$key}})">Large</a></li>
                                                 <li><a class="dropdown-item" href="#" style="font-weight: 700; color: white;" onclick="setSize('XLarge', {{$key}})">XLarge</a></li>
