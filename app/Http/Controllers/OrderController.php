@@ -343,91 +343,91 @@ class OrderController extends Controller
 
 public function dingerCallback(Request $request)
 {
-    Log::info('Received callback from Dinger:', $request->all());
+    return response()->json($request->all());
 
-    $paymentResult = $request->input('paymentResult');
-    $checksum = $request->input('checksum');
-    $callbackKey = '2855e461a79d46ef637a0cfaae0850c2';
-    $decrypted = openssl_decrypt(base64_decode($paymentResult), 'AES-256-ECB', $callbackKey);
-    $computedChecksum = hash('sha256', $decrypted);
+    // Log::info('Received callback from Dinger:', $request->all());
+    // $paymentResult = $request->input('paymentResult');
+    // $checksum = $request->input('checksum');
+    // $callbackKey = '2855e461a79d46ef637a0cfaae0850c2';
+    // $decrypted = openssl_decrypt(base64_decode($paymentResult), 'AES-256-ECB', $callbackKey);
+    // $computedChecksum = hash('sha256', $decrypted);
 
-    if ($computedChecksum !== $checksum) {
-        return "Incorrect signature.";
-    }
+    // if ($computedChecksum !== $checksum) {
+    //     return "Incorrect signature.";
+    // }
 
-    $decryptedValues = json_decode($decrypted, true);
+    // $decryptedValues = json_decode($decrypted, true);
 
-    $totalAmount = $decryptedValues['totalAmount'];
-    $createdAt = $decryptedValues['createdAt'];
-    $transactionStatus = $decryptedValues['transactionStatus'];
-    $methodName = $decryptedValues['methodName'];
-    $merchantOrderId = $decryptedValues['merchantOrderId'];
-    $transactionId = $decryptedValues['transactionId'];
-    $customerName = $decryptedValues['customerName'];
-    $providerName = $decryptedValues['providerName'];
+    // $totalAmount = $decryptedValues['totalAmount'];
+    // $createdAt = $decryptedValues['createdAt'];
+    // $transactionStatus = $decryptedValues['transactionStatus'];
+    // $methodName = $decryptedValues['methodName'];
+    // $merchantOrderId = $decryptedValues['merchantOrderId'];
+    // $transactionId = $decryptedValues['transactionId'];
+    // $customerName = $decryptedValues['customerName'];
+    // $providerName = $decryptedValues['providerName'];
 
-    // Perform actions based on the transaction status
-    if ($transactionStatus) {
-        // DB::beginTransaction();
+    // if ($transactionStatus === 'SUCCESS') {
+    //     DB::beginTransaction();
         
-        $invoice = new Invoice();
-        $invoice->customer_id = session()->get('customer_uniquekey');
-        $invoice->status = $transactionStatus;
-        $invoice->total_price = $totalAmount;
-        $invoice->payment_method = $providerName;
-        $invoice->fees = 0;
-        $invoice->save();
+    //     $invoice = new Invoice();
+    //     $invoice->customer_id = session()->get('customer_uniquekey');
+    //     $invoice->status = $transactionStatus;
+    //     $invoice->total_price = $totalAmount;
+    //     $invoice->payment_method = $providerName;
+    //     $invoice->fees = 0;
+    //     $invoice->save();
 
-        $invoiceDetail = TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first();
-        $delivery = TempDeliInfo::where('invoice_id', $invoiceDetail->id)->latest()->first();
+    //     $invoiceDetail = TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first();
+    //     $delivery = TempDeliInfo::where('invoice_id', $invoiceDetail->id)->latest()->first();
 
-        $delivery_info = new DeliveryInfo();
-        $delivery_info->invoice_id = $invoice->id;
-        $delivery_info->customer_id = $delivery->customer_id;
-        $delivery_info->country_id = $delivery->country_id;
-        $delivery_info->division_id = $delivery->division_id;
-        $delivery_info->district_id = $delivery->district_id;
-        $delivery_info->township_id = $delivery->township_id;
-        $delivery_info->delivery_address = $delivery->delivery_address;
-        $delivery_info->recipient_phone = $delivery->recipient_phone;
-        $delivery_info->recipient_name = $delivery->recipient_name;
-        $delivery_info->save();
+    //     $delivery_info = new DeliveryInfo();
+    //     $delivery_info->invoice_id = $invoice->id;
+    //     $delivery_info->customer_id = $delivery->customer_id;
+    //     $delivery_info->country_id = $delivery->country_id;
+    //     $delivery_info->division_id = $delivery->division_id;
+    //     $delivery_info->district_id = $delivery->district_id;
+    //     $delivery_info->township_id = $delivery->township_id;
+    //     $delivery_info->delivery_address = $delivery->delivery_address;
+    //     $delivery_info->recipient_phone = $delivery->recipient_phone;
+    //     $delivery_info->recipient_name = $delivery->recipient_name;
+    //     $delivery_info->save();
 
-        $orders = TempOrderProduct::where('invoice_id', $invoiceDetail->id)->get();
-        foreach ($orders as $orderinfo) {
-            $size = $orderinfo->size . '_quantity';
-            if ($orderinfo->size == "free" || $orderinfo->size == "no") {
-                $size = "small_quantity";
-            }
-            $update_quantity = DB::table('products')->select($size)->where('id', $orderinfo->product_id)->first();
-            if ($update_quantity->$size <= 0) {
-                // DB::rollBack();
-                return view('cart.error_page');
-            }
-            $order = new Order();
-            $order->invoice_id = $invoice->id;
-            $order->customer_id = $orderinfo->customer_id;
-            $order->product_id = $orderinfo->product_id;
-            $order->price = $orderinfo->price;
-            $order->size = $orderinfo->size;
-            $order->status = $orderinfo->status;
-            $order->save();
-            $this->decreaseStock($order->product_id, $order->size);
-        }
+    //     $orders = TempOrderProduct::where('invoice_id', $invoiceDetail->id)->get();
+    //     foreach ($orders as $orderinfo) {
+    //         $size = $orderinfo->size . '_quantity';
+    //         if ($orderinfo->size == "free" || $orderinfo->size == "no") {
+    //             $size = "small_quantity";
+    //         }
+    //         $update_quantity = DB::table('products')->select($size)->where('id', $orderinfo->product_id)->first();
+    //         if ($update_quantity->$size <= 0) {
+    //             DB::rollBack();
+    //             return view('cart.error_page');
+    //         }
+    //         $order = new Order();
+    //         $order->invoice_id = $invoice->id;
+    //         $order->customer_id = $orderinfo->customer_id;
+    //         $order->product_id = $orderinfo->product_id;
+    //         $order->price = $orderinfo->price;
+    //         $order->size = $orderinfo->size;
+    //         $order->status = $orderinfo->status;
+    //         $order->save();
+    //         $this->decreaseStock($order->product_id, $order->size);
+    //     }
 
-        TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-        TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-        TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
+    //     TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
+    //     TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
+    //     TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
 
-        // DB::commit();
-        return view('cart.success_page');
-    } else {
-        TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-        TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-        TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
+    //     DB::commit();
+    //     return view('cart.success_page');
+    // } else {
+    //     TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
+    //     TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
+    //     TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
         
-        return view('cart.error_page');
-    }
+    //     return view('cart.error_page');
+    // }
 }
  
     public function success()
