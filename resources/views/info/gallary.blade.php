@@ -40,16 +40,16 @@
     }
 </style>
 
-<body>
+<body style="background-color:#0000ff;">
     @if ($photos->isEmpty())
         <div class="product">
             <div class="row justify-content-center">
               <div class="col-md-12 text-center">
                 <div class="card text-black" style="background: #fff; border: none;">
-                  <div class="card-body">
-                      <h4 class="text-black">No photos available</h4>
-                      <h4 class="text-black">Thank you for visiting the NRF Website</h4>
-                      <h4 class="text-black">We look forward to welcoming you again on your next visit!</h4>
+                  <div class="card-body" style="color: #0000ff;">
+                      <h4>No photos available</h4>
+                      <h4>Thank you for visiting the NRF Website</h4>
+                      <h4>We look forward to welcoming you again on your next visit!</h4>
                   </div>
                 </div>
               </div>
@@ -69,5 +69,5 @@
 @endsection
 
 @section('footer')
-@include('layouts.footer', ['footerColor' => 'black'])
+@include('layouts.footer', ['footerColor' => 'blue'])
 @endsection

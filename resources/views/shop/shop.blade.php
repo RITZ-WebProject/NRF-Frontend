@@ -225,7 +225,7 @@
     }
     </style>
 </head>
-<body>
+<body style="background-color: #0000ff;">
     <div class="hero" style="background-color: #fff;">
         @if (!$productList->isEmpty())
         <div class="text-center pt-5">
@@ -270,10 +270,10 @@
                   <div class="row justify-content-center">
                     <div class="col-md-12 text-center">
                       <div class="card text-black" style="background: #fff; border: none;">
-                        <div class="card-body">
-                            <h4 class="text-black">No products available</h4>
-                            <h4 class="text-black">Thank you for visiting the NRF Website</h4>
-                            <h4 class="text-black">We look forward to welcoming you again on your next visit!</h4>
+                        <div class="card-body" style="color: #0000ff;">
+                            <h4 >No products available</h4>
+                            <h4 >Thank you for visiting the NRF Website</h4>
+                            <h4 >We look forward to welcoming you again on your next visit!</h4>
                         </div>
                       </div>
                     </div>
@@ -402,7 +402,7 @@
     
  @endsection
  @section('footer')
- @include('layouts.footer', ['footerColor' => 'black'])
+ @include('layouts.footer', ['footerColor' => 'blue'])
  @endsection
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
  
