@@ -326,24 +326,8 @@ class OrderController extends Controller
 
         \Cart::clear();
         DB::commit();
-
-        // $totalAmount = $invoice->total_price;
         $orderId=$invoice->id;
         $customerName=$delivery_info->recipient_name;
-        // $product = Product::find($order->product_id);
-        // if ($product) {
-        //     $items = [
-        //         [
-        //             'name' => $product->product_name,
-        //             'amount' => $order->price,
-        //             'quantity' => 1,
-        //         ]
-        //     ];
-        // } else {
-        //    dd('hit');
-        // }
-        
-
         $data = [
             "clientId" => "f17dd814-0f2f-3a7a-a138-bee3c04c0807",
             "publicKey" => "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDj32iCJ4wjM9E5zTavXYeIlgi2U0/q7s4JsE6QGmfY3iFaHOtfjmDgFdaeoGK5HJUVd1ScpvCyqGiZbtBRzHjgCCUCV67CO0rEMBrKCCfzM/eTOSwBB8z7Wm4qHJEPnAvY1aNkSAY+OBSQ75VuO1bYWhl5bfuVfMdQhYqmHaqpTQIDAQAB",
