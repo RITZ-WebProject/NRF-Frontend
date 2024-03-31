@@ -281,7 +281,7 @@ class OrderController extends Controller
                 $order->size = $carts->attributes['size'];
                 $order->status = 'pending';
                 $order->save();
-                
+
                 // Add product details to the items array
                 $product = Product::find($carts->id);
                 if ($product) {
@@ -328,7 +328,7 @@ class OrderController extends Controller
          
 
     } catch (\Exception $err) {
-
+        // dd($err);
         DB::rollBack();
         abort(403, "Fail to order, missing required informations.");
         return response()->json(['status_code' => 404, 'message' => 'Fail to order']);
@@ -341,7 +341,7 @@ class OrderController extends Controller
 
     if ($state === 'SUCCESS') {
         // Retrieve data from temporary tables
-        $invoice = TempInvoice::findOrFail($merchantOrderId);
+        $invoice = TempInvoice::where('id', $merchantOrderId)->get();
         $deliInfo = TempDeliInfo::where('invoice_id', $merchantOrderId)->get();
         $orderProducts = TempOrderProduct::where('invoice_id', $merchantOrderId)->get();
 
