@@ -387,7 +387,7 @@ class OrderController extends Controller
             DB::commit();
             
             // Redirect to the success page
-            return redirect()->route('payment.success');
+            return view('cart.success_page');
         } catch (\Exception $e) {
             dd($e);
             DB::rollback();
