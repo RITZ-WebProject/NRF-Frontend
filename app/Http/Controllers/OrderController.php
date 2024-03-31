@@ -256,7 +256,6 @@ class OrderController extends Controller
         $delivery_info->recipient_name = $request->recipient_name;
         $delivery_info->recipient_phone = $request->recipient_phone;
         $delivery_info->save();
-
         $totalAmount = 0;
         $items = []; 
 
@@ -274,7 +273,7 @@ class OrderController extends Controller
                     DB::rollBack();
                     return response()->json(['status_code' => 403, 'message' => 'you have already ordered this product.']);
                 }
-                $order = new TempOrderProduct();
+                $order = new TempOrderProduct;
                 $order->invoice_id = $invoice->id;
                 $order->customer_id = session()->get('customer_uniquekey');
                 $order->product_id = $carts->id;
@@ -282,7 +281,7 @@ class OrderController extends Controller
                 $order->size = $carts->attributes['size'];
                 $order->status = 'pending';
                 $order->save();
-
+                
                 // Add product details to the items array
                 $product = Product::find($carts->id);
                 if ($product) {
@@ -321,14 +320,12 @@ class OrderController extends Controller
         $value = json_encode($data);
         $ciphertext = $rsa->encrypt($value);
         $payloadBase64 = base64_encode($ciphertext);
-        $payloadEncoded = urlencode($payloadBase64);
-        
-        $this->generatePaymentRequest($orderId,$customerName,$totalAmount);   
+        $payloadEncoded = urlencode($payloadBase64); 
         $secretKey = 'ae1426ff6d0736d31119a3d5168143aa';
         $hashedValue = hash_hmac('sha256', $value, $secretKey);
         $redirect_url = "https://form.dinger.asia/?hashValue=$hashedValue&payload=$payloadEncoded";
         return redirect($redirect_url);
-        
+         
 
     } catch (\Exception $err) {
 
@@ -337,123 +334,98 @@ class OrderController extends Controller
         return response()->json(['status_code' => 404, 'message' => 'Fail to order']);
     }
 }
+   public function success(Request $request)
+{
+    $merchantOrderId = $request->input('merchantOrderId');
+    $state = $request->input('state');
 
-    public function generatePaymentRequest($orderId,$customerName,$totalAmount)
-    {
-        $data = [
-            "totalAmount" => $totalAmount,
-            "createdAt" => now()->format('Ymd His'),
-            "transactionStatus" => "SUCCESS",
-            "methodName" => "QR",
-            "merchantOrderId" => $orderId,
-            "transactionId" => "TRX" . mt_rand(1000000000, 9999999999),
-            "customerName" => $customerName,
-            "providerName" => "Dinger",
-        ];
-        $jsonPayload = json_encode($data);
-        $publicKey = '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCFD4IL1suUt/TsJu6zScnvsEdLPuACgBdjX82QQf8NQlFHu2v/84dztaJEyljv3TGPuEgUftpC9OEOuEG29z7z1uOw7c9T/luRhgRrkH7AwOj4U1+eK3T1R+8LVYATtPCkqAAiomkTU+aC5Y2vfMInZMgjX0DdKMctUur8tQtvkwIDAQAB-----END PUBLIC KEY-----';
-        
-        $rsa = new RSA();
-        $rsa->loadKey($publicKey);
-        $rsa->setEncryptionMode(2);
-        $encryptedPayload = $rsa->encrypt($jsonPayload);
-        $base64EncodedPayload = base64_encode($encryptedPayload);
-        $checksum = hash('sha256', $jsonPayload);
-        $redirectUrl = "https://noreplacementsfound.com/dinger-callback";
-        $redirectUrl .= "?paymentResult=" . urlencode($base64EncodedPayload);
-        $redirectUrl .= "&checksum=" . urlencode($checksum);
-        return redirect($redirectUrl);
-}
+    if ($state === 'SUCCESS') {
+        // Retrieve data from temporary tables
+        $invoice = TempInvoice::findOrFail($merchantOrderId);
+        $deliInfo = TempDeliInfo::where('invoice_id', $merchantOrderId)->get();
+        $orderProducts = TempOrderProduct::where('invoice_id', $merchantOrderId)->get();
 
-public function dingerCallback(Request $request)
-{ 
-    $paymentResult = $request->input('paymentResult');
-    $checksum = $request->input('checksum');
-    $callbackKey = '2855e461a79d46ef637a0cfaae0850c2';
-    $decrypted = openssl_decrypt(base64_decode($paymentResult), 'AES-256-ECB', $callbackKey);
-    $computedChecksum = hash('sha256', $decrypted);
-    if ($computedChecksum !== $checksum) {
-        return "Incorrect signature.";
-    }
-    $decryptedValues = json_decode($decrypted, true);
-    $totalAmount = $decryptedValues['totalAmount'];
-    $createdAt = $decryptedValues['createdAt'];
-    $transactionStatus = $decryptedValues['transactionStatus'];
-    $methodName = $decryptedValues['methodName'];
-    $merchantOrderId = $decryptedValues['merchantOrderId'];
-    $transactionId = $decryptedValues['transactionId'];
-    $customerName = $decryptedValues['customerName'];
-    $providerName = $decryptedValues['providerName'];
-
-    if ($transactionStatus === 'SUCCESS') {
         DB::beginTransaction();
-        
-        $invoice = new Invoice();
-        $invoice->customer_id =session()->get('customer_uniquekey');
-        $invoice->status = $transactionStatus;
-        $invoice->total_price = $totalAmount;
-        $invoice->payment_method = $providerName;
-        $invoice->fees = 0;
-        $invoice->save();
 
-        $invoiceDetail = TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first();
-        $delivery = TempDeliInfo::where('invoice_id', $invoiceDetail->id)->latest()->first();
+        try {
+            // Create new records in permanent tables
+            $inv = new Invoice;
+            $inv->customer_id = $invoice->customer_id;
+            $inv->status = "pending";
+            $inv->total_price = $invoice->total_price;
+            $inv->payment_method = "online";
+            $inv->fees = 0;
+            $inv->save();
 
-        $delivery_info = new DeliveryInfo();
-        $delivery_info->invoice_id = $invoice->id;
-        $delivery_info->customer_id = $delivery->customer_id;
-        $delivery_info->country_id = $delivery->country_id;
-        $delivery_info->division_id = $delivery->division_id;
-        $delivery_info->district_id = $delivery->district_id;
-        $delivery_info->township_id = $delivery->township_id;
-        $delivery_info->delivery_address = $delivery->delivery_address;
-        $delivery_info->recipient_phone = $delivery->recipient_phone;
-        $delivery_info->recipient_name = $delivery->recipient_name;
-        $delivery_info->save();
+            $deli = new DeliveryInfo;
+            $deli->invoice_id = $deliInfo->invoice_id;
+            $deli->customer_id = $deliInfo->customer_id;
+            $deli->country_id = $deliInfo->country_id;
+            $deli->division_id = $deliInfo->division_id;
+            $deli->district_id = $deliInfo->district_id;
+            $deli->township_id = $deliInfo->township_id;
+            $deli->delivery_address = $deliInfo->delivery_address;
+            $deli->recipient_name = $deliInfo->recipient_name;
+            $deli->recipient_phone = $deliInfo->recipient_phone;
+            $deli->save();
 
-        $orders = TempOrderProduct::where('invoice_id', $invoiceDetail->id)->get();
-        foreach ($orders as $orderinfo) {
-            $size = $orderinfo->size . '_quantity';
-            if ($orderinfo->size == "free" || $orderinfo->size == "no") {
-                $size = "small_quantity";
+            foreach ($orderProducts as $orderProduct) {
+                $order = new Order;
+                $order->invoice_id = $orderProduct->invoice_id;
+                $order->customer_id = $orderProduct->customer_id;
+                $order->product_id = $orderProduct->product_id;
+                $order->price = $orderProduct->price;
+                $order->size = $orderProduct->size;
+                $order->status = 'pending';
+                $order->save();
+                $this->decreaseStock($order->product_id, $order->size);
             }
-            $update_quantity = DB::table('products')->select($size)->where('id', $orderinfo->product_id)->first();
-            if ($update_quantity->$size <= 0) {
-                DB::rollBack();
-                return view('cart.error_page');
-            }
-            $order = new Order();
-            $order->invoice_id = $invoice->id;
-            $order->customer_id = $orderinfo->customer_id;
-            $order->product_id = $orderinfo->product_id;
-            $order->price = $orderinfo->price;
-            $order->size = $orderinfo->size;
-            $order->status = $orderinfo->status;
-            $order->save();
-            $this->decreaseStock($order->product_id, $order->size);
+
+            // Delete records from temporary tables
+            TempOrderProduct::where('invoice_id', $merchantOrderId)->delete();
+            TempDeliInfo::where('invoice_id', $merchantOrderId)->delete();
+            TempInvoice::where('id', $merchantOrderId)->delete();
+
+            DB::commit();
+            
+            // Redirect to the success page
+            return redirect()->route('payment.success');
+        } catch (\Exception $e) {
+            DB::rollback();
+            // Handle the exception
+            Order::where('invoice_id', $merchantOrderId)->delete();
+            DeliveryInfo::where('invoice_id', $merchantOrderId)->delete();
+            Invoice::where('id', $merchantOrderId)->delete();
+            return response()->json(['status_code' => 500, 'message' => 'Error occurred while processing the payment.']);
         }
-        
-        TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-        TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-        TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-
-        DB::commit();
-        return view('cart.success_page');
     } else {
-        TempOrderProduct::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-        TempDeliInfo::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
-        TempInvoice::where('customer_id', session()->get('customer_uniquekey'))->latest()->first()->delete();
+        // Payment failed, delete the temporary order data
+        DB::beginTransaction();
+        TempOrderProduct::where('invoice_id', $merchantOrderId)->delete();
+        TempDeliInfo::where('invoice_id', $merchantOrderId)->delete();
+        TempInvoice::where('id', $merchantOrderId)->delete();
+        DB::commit();
         
+        // Redirect to the error page
         return view('cart.error_page');
     }
 }
- 
-    public function success()
-    {
-        return view('cart.success_page');
-    }  
-    public function error()
-    {
+
+    public function error(Request $request)
+{
+    $merchantOrderId = $request->input('merchantOrderId');
+    try {
+        // Start a database transaction
+        DB::beginTransaction();
+        TempOrderProduct::where('invoice_id', $merchantOrderId)->delete();
+        TempDeliInfo::where('invoice_id', $merchantOrderId)->delete();
+        TempInvoice::where('id', $merchantOrderId)->delete();
+        DB::commit();
         return view('cart.error_page');
+    } catch (\Exception $err) {
+        DB::rollBack();
+        return response()->json(['status_code' => 500, 'message' => 'Error occurred while deleting records']);
     }
+}
+
 }
