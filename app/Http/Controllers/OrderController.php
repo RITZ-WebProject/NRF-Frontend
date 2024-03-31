@@ -356,7 +356,7 @@ class OrderController extends Controller
             $inv->save();
 
             $deli = new DeliveryInfo;
-            $deli->invoice_id = $inv->invoice_id;
+            $deli->invoice_id = $inv->id;
             $deli->customer_id = $deliInfo->customer_id;
             $deli->country_id = $deliInfo->country_id;
             $deli->division_id = $deliInfo->division_id;
@@ -369,7 +369,7 @@ class OrderController extends Controller
 
             foreach ($orderProducts as $orderProduct) {
                 $order = new Order;
-                $order->invoice_id = $inv->invoice_id;
+                $order->invoice_id = $inv->id;
                 $order->customer_id = $orderProduct->customer_id;
                 $order->product_id = $orderProduct->product_id;
                 $order->price = $orderProduct->price;
