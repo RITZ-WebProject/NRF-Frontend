@@ -372,7 +372,7 @@ class OrderController extends Controller
                 $order->invoice_id = $inv->id;
                 $order->customer_id = $orderProduct->customer_id;
                 $order->product_id = $orderProduct->product_id;
-                $order->price = $orderProduct->price;
+                $order->price = \Cart::getTotal();
                 $order->size = $orderProduct->size;
                 $order->status = 'pending';
                 $order->save();
