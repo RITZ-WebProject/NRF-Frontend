@@ -391,6 +391,7 @@ class OrderController extends Controller
             // Redirect to the success page
             return redirect()->route('payment.success');
         } catch (\Exception $e) {
+            dd($e);
             DB::rollback();
             // Handle the exception
             Order::where('invoice_id', $merchantOrderId)->delete();
