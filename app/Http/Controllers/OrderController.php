@@ -217,7 +217,6 @@ class OrderController extends Controller
             $invoice->payment_method = "online";
             $invoice->fees = 0;
             $invoice->save();
-
         // Create delivery information and handle out-of-stock items and order products
         $delivery_info = new TempDeliInfo;
         $delivery_info->invoice_id = $invoice->id;
@@ -281,7 +280,6 @@ class OrderController extends Controller
                 $order->size = $carts->attributes['size'];
                 $order->status = 'pending';
                 $order->save();
-
                 // Add product details to the items array
                 $product = Product::find($carts->id);
                 if ($product) {
@@ -328,7 +326,7 @@ class OrderController extends Controller
          
 
     } catch (\Exception $err) {
-        // dd($err);
+        dd($err);
         DB::rollBack();
         abort(403, "Fail to order, missing required informations.");
         return response()->json(['status_code' => 404, 'message' => 'Fail to order']);
@@ -342,7 +340,7 @@ class OrderController extends Controller
     if ($state === 'SUCCESS') {
         // Retrieve data from temporary tables
         $invoice = TempInvoice::where('id', $merchantOrderId)->get();
-        $deliInfo = TempDeliInfo::where('invoice_id', $merchantOrderId)->get();
+        $deliInfo = TempDeliInfo::where('invoice_id', $merchantOrderId)->first();
         $orderProducts = TempOrderProduct::where('invoice_id', $merchantOrderId)->get();
 
         DB::beginTransaction();
@@ -350,9 +348,9 @@ class OrderController extends Controller
         try {
             // Create new records in permanent tables
             $inv = new Invoice;
-            $inv->customer_id = $invoice->customer_id;
+            $inv->customer_id = session()->get('customer_uniquekey');
             $inv->status = "pending";
-            $inv->total_price = $invoice->total_price;
+            $inv->total_price =\Cart::getTotal();
             $inv->payment_method = "online";
             $inv->fees = 0;
             $inv->save();
