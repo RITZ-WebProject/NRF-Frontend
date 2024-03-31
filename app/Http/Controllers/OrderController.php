@@ -257,32 +257,6 @@ class OrderController extends Controller
         $delivery_info->recipient_phone = $request->recipient_phone;
         $delivery_info->save();
 
-        // foreach ($cart as $carts) {
-        //     if(!$this->checkInStock($carts)) {
-        //         $invoice->total_price -= $carts->price;
-        //         $invoice->save();
-        //         \Cart::remove($carts->id);
-        //         DB::rollBack();
-        //         return response()->json(['status_code' => 404, 'message' => 'out of stock']);
-        //         return redirect()->back()->with('error', 'Item is out of stock');
-
-        //     } else {
-        //         if (DB::table('ordered_products')->where('customer_id', session()->get('customer_uniquekey'))->where('product_id', $carts->id)->first()) 
-        //         {
-        //             \Cart::remove($carts->id);
-        //             DB::rollBack();
-        //             return response()->json(['status_code' => 403, 'message' => 'you have already ordered this product.']);
-        //         }
-        //         $order = new TempOrderProduct();
-        //         $order->invoice_id = $invoice->id;
-        //         $order->customer_id = session()->get('customer_uniquekey');
-        //         $order->product_id = $carts->id;
-        //         $order->price = $carts->price;
-        //         $order->size = $carts->attributes['size'];
-        //         $order->status = 'pending';
-        //         $order->save();
-        //     }
-        // }
         $totalAmount = 0;
         $items = []; 
 
@@ -344,18 +318,17 @@ class OrderController extends Controller
         $rsa = new RSA();
         $rsa->loadKey($publicKey);
         $rsa->setEncryptionMode(2); 
-        
-        
         $value = json_encode($data);
         $ciphertext = $rsa->encrypt($value);
         $payloadBase64 = base64_encode($ciphertext);
         $payloadEncoded = urlencode($payloadBase64);
         
-        
+        $this->generatePaymentRequest($orderId,$customerName,$totalAmount);   
         $secretKey = 'ae1426ff6d0736d31119a3d5168143aa';
         $hashedValue = hash_hmac('sha256', $value, $secretKey);
         $redirect_url = "https://form.dinger.asia/?hashValue=$hashedValue&payload=$payloadEncoded";
         return redirect($redirect_url);
+        
 
     } catch (\Exception $err) {
 
@@ -365,21 +338,44 @@ class OrderController extends Controller
     }
 }
 
+    public function generatePaymentRequest($orderId,$customerName,$totalAmount)
+    {
+        $data = [
+            "totalAmount" => $totalAmount,
+            "createdAt" => now()->format('Ymd His'),
+            "transactionStatus" => "SUCCESS",
+            "methodName" => "QR",
+            "merchantOrderId" => $orderId,
+            "transactionId" => "TRX" . mt_rand(1000000000, 9999999999),
+            "customerName" => $customerName,
+            "providerName" => "Dinger",
+        ];
+        $jsonPayload = json_encode($data);
+        $publicKey = '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCFD4IL1suUt/TsJu6zScnvsEdLPuACgBdjX82QQf8NQlFHu2v/84dztaJEyljv3TGPuEgUftpC9OEOuEG29z7z1uOw7c9T/luRhgRrkH7AwOj4U1+eK3T1R+8LVYATtPCkqAAiomkTU+aC5Y2vfMInZMgjX0DdKMctUur8tQtvkwIDAQAB-----END PUBLIC KEY-----';
+        
+        $rsa = new RSA();
+        $rsa->loadKey($publicKey);
+        $rsa->setEncryptionMode(2);
+        $encryptedPayload = $rsa->encrypt($jsonPayload);
+        $base64EncodedPayload = base64_encode($encryptedPayload);
+        $checksum = hash('sha256', $jsonPayload);
+        $redirectUrl = "https://noreplacementsfound.com/dinger-callback";
+        $redirectUrl .= "?paymentResult=" . urlencode($base64EncodedPayload);
+        $redirectUrl .= "&checksum=" . urlencode($checksum);
+        return redirect($redirectUrl);
+}
+
 public function dingerCallback(Request $request)
-{
-    Log::info('Received callback from Dinger:', $request->all());
+{ 
     $paymentResult = $request->input('paymentResult');
     $checksum = $request->input('checksum');
     $callbackKey = '2855e461a79d46ef637a0cfaae0850c2';
     $decrypted = openssl_decrypt(base64_decode($paymentResult), 'AES-256-ECB', $callbackKey);
     $computedChecksum = hash('sha256', $decrypted);
-
     if ($computedChecksum !== $checksum) {
         return "Incorrect signature.";
     }
-
     $decryptedValues = json_decode($decrypted, true);
-
     $totalAmount = $decryptedValues['totalAmount'];
     $createdAt = $decryptedValues['createdAt'];
     $transactionStatus = $decryptedValues['transactionStatus'];
@@ -393,7 +389,7 @@ public function dingerCallback(Request $request)
         DB::beginTransaction();
         
         $invoice = new Invoice();
-        $invoice->customer_id = session()->get('customer_uniquekey');
+        $invoice->customer_id =session()->get('customer_uniquekey');
         $invoice->status = $transactionStatus;
         $invoice->total_price = $totalAmount;
         $invoice->payment_method = $providerName;
