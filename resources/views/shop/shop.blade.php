@@ -24,7 +24,7 @@
          .category-link {
              text-decoration: none;
              color: white;
-             background-color: black;
+             background-color: #0000ff;
              padding: 8px 12px; /* Adjust padding for better spacing */
              border-radius: 5px; /* Add rounded corners */
          }
@@ -255,7 +255,7 @@
                         </a>
                     </div>
                     <p class="item-description text-black">
-                        {{ $products->product_name }} <br>{{ number_format($products->price, 0, ',') }} MMK
+                        {{ $products->product_name }} <br>{{ number_format($products->price, 0, ',') }} MMK({{ number_format($products->price, 0, ',') }} $)
                     </p>
                 </div>
     

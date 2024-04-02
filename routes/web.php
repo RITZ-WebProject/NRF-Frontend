@@ -7,6 +7,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\InfoController;
 
 /*
@@ -32,9 +33,15 @@ Route::middleware(['logout'])->group(function() {
 
 });
 
-Route::get('/login',[LoginController::class,'index']);
+Route::get('/login',[LoginController::class,'index'])->name('login');
 Route::post('/authenticate', [LoginController::class,'customLogin'])->name('authenticate');
 Route::get('/signout',[LoginController::class,'signOut']);
+Route::get('/forgot-password',[LoginController::class,'signOut']);
+Route::get('/forgot-password', [ForgotPasswordController::class,'sendResetLinkEmail'])->name('password.request');
+Route::get('/request', [ForgotPasswordController::class,'requestForm'])->name('request');
+Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ForgotPasswordController::class, 'reset'])->name('password.update');
+
 
 Route::get('/register', [CustomersController::class,'create']);
 Route::post('/customer/store',[CustomersController::class,'store'])->name('customer.store');

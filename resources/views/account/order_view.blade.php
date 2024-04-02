@@ -70,7 +70,7 @@
                                         @php $i = 1;
                                         @endphp
                                         @foreach ($order_details as $detail)
-                                        	@php $photoArray = explode("'x'", $detail->photo); @endphp
+                                        	@php $photoArray = explode("'x'", $detail->product->photo); @endphp
                                             <tr class="align-middle">
                                                 <td>{{ $i++ }}</td>
                                                 <td class="align-middle">
@@ -79,7 +79,7 @@
                                                             <img src="{{ env('PHOTO_URL').$photoArray[0] }}" width="100px" height="100px" alt="" class="rounded">
                                                         </div>
                                                         <div class="col-sm-9 my-auto">
-                                                            {{ $detail->product_name }}
+                                                            {{ $detail->product->product_name ?? '' }}
 
                                                         </div>
                                                     </div>

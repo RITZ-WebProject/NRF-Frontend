@@ -20,13 +20,13 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="fullName">Full Name</label>
-                                            <input type="text" name="recipient_name" class="form-control" id="fullName" value="{{$customer->customer_name}}" placeholder="Enter your full name">
+                                            <input type="text" name="recipient_name" class="form-control" id="fullName" value="{{$customer->customer_name ?? ''}}" placeholder="Enter your full name">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone-no">Phone Number</label>
-                                            <input type="text" name="recipient_phone" value="{{$customer->phone_primary}}" class="form-control" id="fullName" placeholder="Enter your full name">
+                                            <input type="text" name="recipient_phone" value="{{$customer->phone_primary ?? ''}}" class="form-control" id="fullName" placeholder="Enter your full name">
                                         </div>
                                     </div>
                                 <!-- </div> -->
@@ -36,9 +36,9 @@
                                     <div class="form-group">
                                         <label for="country">Country</label>
                                         <select class="form-control" name="country_id" id="countryDropdown" onchange="toggleDivisionInput()">
-                                            <option selected> Select Country </option>
+                                            <option value="" {{ $customer->country_id == '' ? 'selected' : '' }}>Select Country</option>
                                             @foreach ($countries as $country)
-                                                <option value="{{ $country->name }}">{{ $country->name }}</option>
+                                                <option value="{{ $country->name }}" {{ $customer->country_id == $country->name ? 'selected' : '' }}>{{ $country->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -47,13 +47,14 @@
                                     <div class="form-group">
                                         <label for="state">State/Division</label>
                                         <select class="form-control" name="division_id_select" id="divisionDropdown" disabled>
-                                            <option selected> Select State/Division </option>
+                                            <option value="" {{ $customer->division ? ($customer->division->division_name == '' ? 'selected' : '') : '' }}>Select State/Division</option>
                                             @foreach($divisions as $division)
-                                                <option value="{{ $division->id }}">{{ $division->division_name }}</option>
+                                                <option value="{{ $division->id }}" {{ $customer->division ? ($customer->division->division_name == $division->division_name ? 'selected' : '') : '' }}>{{ $division->division_name }}</option>
                                             @endforeach
                                         </select>
-                                        <input type="text" name="division_id_input" class="form-control" id="divisionInput" placeholder="Enter Your Division" style="display: none;">
+                                        <input type="text" name="division_id_input" value="{{ $customer->division ? $customer->division->division_name : '' }}" class="form-control" id="divisionInput" placeholder="Enter Your Division" style="{{ $customer->division ? 'display: none;' : '' }}">
                                     </div>
+
                                 </div>
                             </div>
                             
@@ -62,19 +63,26 @@
                                     <div class="form-group">
                                         <label for="district">District</label>
                                         <select class="form-control" name="district_id_select" id="districtDropdown">
-                                            <option selected> Select District </option>
+                                            <option value="">Select District</option>
+                                            @foreach($districts as $district)
+                                                <option value="{{ $district->id }}" {{ $customer->district && $customer->district->district_name == $district->district_name ? 'selected' : '' }}>{{ $district->district_name }}</option>
+                                            @endforeach
                                         </select>
-                                        <input type="text" name="district_id_input" class="form-control" id="districtInput" placeholder="Enter Your District" style="display: none;">
+                                        <input type="text" name="district_id_input" class="form-control" value="{{ $customer->district ? $customer->district->district_name : '' }}" id="districtInput" placeholder="Enter Your District" style="{{ $customer->district ? 'display: none;' : '' }}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="township">Township</label>
                                         <select class="form-control" name="township_id_select" id="townshipDropdown">
-                                            <option selected> Select Township </option>
+                                            <option value="">Select Township</option>
+                                            @foreach($townships as $township)
+                                                <option value="{{ $township->id }}" {{ $customer->township && $customer->township->township_name == $township->township_name ? 'selected' : '' }}>{{ $township->township_name }}</option>
+                                            @endforeach
                                         </select>
-                                        <input type="text" name="township_id_input" class="form-control" id="townshipInput" placeholder="Enter Your Township" style="display: none;">
+                                        <input type="text" name="township_id_input" class="form-control" value="{{ $customer->township ? $customer->township->township_name : '' }}" id="townshipInput" placeholder="Enter Your Township" style="{{ $customer->township ? 'display: none;' : '' }}">
                                     </div>
+
                                 </div>
                             </div>
                             
@@ -84,13 +92,13 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="street">Street Name</label>
-                                            <input type="text" class="form-control" id="street" placeholder="Enter your Street name" required>
+                                            <input type="text" class="form-control" value="{{ $customer->street_name ?? ''}}" id="street" placeholder="Enter your Street name" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="home-no">Home No</label>
-                                            <input type="text" class="form-control" id="home-no" placeholder="Enter your Home number" required>
+                                            <input type="text" class="form-control" value="{{ $customer->home_no ?? ''}}" id="home-no" placeholder="Enter your Home number" required>
                                         </div>
                                     </div>
                                 <!-- </div> -->

@@ -12,6 +12,7 @@ use App\Models\DeliveryInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\District;
 use App\Models\TempDeliInfo;
 use App\Models\TempInvoice;
@@ -127,8 +128,9 @@ class OrderController extends Controller
 
     public function cartCheckout()
     {
+        $cusId=session()->get('customer_uniquekey');
         $cart = \Cart::getContent();
-        $customer = DB::table('customers')->where('id', '=', session()->get('customer_uniquekey'))->first();
+        $customer = Customer::where('id', '=', session()->get('customer_uniquekey'))->first();
         $divisions = DB::table('tbl_divisions')->orderby('division_name')->select('division_name', 'id')->get();
         $districts = DB::table('tbl_districts')->get();
         $townships = DB::table('tbl_townships')->get();

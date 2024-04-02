@@ -130,7 +130,7 @@
 
                 <div class="tab-pane text-black test" id="address">
                     <h3 class="billing-address">Billing address</h3>
-                    <h6 class="mb-4">-- The following address will be used on the checkout page by default.</h6>
+                    <h6 class="mb-4">-- </h6>
                     <div class="login">
                         <div class="login_form_container">
                             <div class="account_login_form">

@@ -221,11 +221,7 @@ class CustomersController extends Controller
 
     public function order_view($id)
     {
-        $order_details = DB::table('ordered_products')
-            ->leftJoin('products', 'products.id', '=', 'ordered_products.product_id')
-            ->where('ordered_products.invoice_id', $id)
-            ->select('ordered_products.*', 'products.product_name', 'products.photo')
-            ->get();
+        $order_details = Order::where('invoice_id',$id)->get();
         return view('account.order_view', compact('order_details'));
     }
 
