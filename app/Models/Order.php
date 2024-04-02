@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -14,9 +15,9 @@ class Order extends Model
     protected $fillable = ['id','invoice_id','customer_id','product_id','price','size','status'];
     protected $table = 'ordered_products';
 
-    public function product(): hasMany
+    public function product(): BelongsTo
     {
-        return $this->hasMany(Product::class, 'id','product_id');
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
     public function invoice()
     {

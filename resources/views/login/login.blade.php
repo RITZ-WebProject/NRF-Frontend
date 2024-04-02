@@ -42,6 +42,10 @@
                       </div>
                     </form>
                     <p class="text-center" style="text-transform: uppercase; margin-top: 15px;">Don't have an account? <a href="{{url('/register')}}" class="text-white">Sign up here</a></p>
+                    <p class="text-center" style="text-transform: uppercase; margin-top: 15px;">
+                      <a href="{{ route('request') }}" class="text-white">Forgot your password?</a>
+                  </p>
+
                   </div>
                 </div>
               </div>

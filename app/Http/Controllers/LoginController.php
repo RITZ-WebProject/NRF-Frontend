@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\Customers;
-
+use Illuminate\Support\Facades\Password;
 
 class LoginController extends Controller
 {
@@ -52,5 +52,4 @@ class LoginController extends Controller
 
         return Redirect('/login');
     }
-
 }
