@@ -341,7 +341,7 @@ class OrderController extends Controller
 
     if ($state === 'SUCCESS') {
         // Retrieve data from temporary tables
-        $invoice = TempInvoice::where('id', $merchantOrderId)->get();
+        $invoice = TempInvoice::where('id', $merchantOrderId)->first();
         $deliInfo = TempDeliInfo::where('invoice_id', $merchantOrderId)->first();
         $orderProducts = TempOrderProduct::where('invoice_id', $merchantOrderId)->get();
 
@@ -352,7 +352,7 @@ class OrderController extends Controller
             $inv = new Invoice;
             $inv->customer_id = session()->get('customer_uniquekey');
             $inv->status = "pending";
-            $inv->total_price =\Cart::getTotal();
+            $inv->total_price =$invoice->total_price ?? '';
             $inv->payment_method = "online";
             $inv->fees = 0;
             $inv->save();

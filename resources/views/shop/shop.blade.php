@@ -246,16 +246,13 @@
             @forelse ($productList as $key => $products)
                 <div class="col-md-3 col-6">
                     <div class="bg-image hover-overlay" data-toggle="modal" data-target="#exampleModal{{$key}}">
-                        @php
-                            $photoArray = explode("'x'", $products->photo);
-                        @endphp
-                        <img class="primary-img" src="{{ env('PHOTO_URL') . $photoArray[0] }}" class="w-100" alt="Item {{ $key + 1 }}" id="item-image">
+                        <img class="primary-img" src="{{ json_decode($products->photo)[0] }}" class="w-100" alt="Product Photo" id="item-image">
                         <a href="#!">
                             <div class="mask" style="background-color: hsla(217, 89%, 51%, 0.5) !important;"></div>
                         </a>
                     </div>
                     <p class="item-description text-black">
-                        {{ $products->product_name }} <br>{{ number_format($products->price, 0, ',') }} MMK({{ number_format($products->price, 0, ',') }} $)
+                        {{ $products->product_name }} <br>{{ number_format($products->price, 0, ',') }} MMK({{ number_format($products->dollor, 0, ',') }} $)
                     </p>
                 </div>
     
@@ -282,24 +279,37 @@
             @endforelse
         </div>
     </div>
-    @foreach ($productList as $key => $products)
-    <div class="modal fade" id="exampleModal{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content" style="background: #000;">
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12 col-md-6">
-                                <div class="text-center mb-3 item-card">
+  @foreach ($productList as $key => $products)
+<div class="modal fade" id="exampleModal{{$key}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background: #000;">
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div id="carousel{{$key}}" class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner">
                                     @php
-                                        $photoArray = explode("'x'", $products->photo);
+                                        $photoArray = json_decode($products->photo);
                                     @endphp
-                                    <img class="primary-img custom-image" src="{{ env('PHOTO_URL') . $photoArray[0] }}" class="w-100" alt="Item {{ $key + 1 }}" id="item-image" style="object-fit: cover;">
-                                    <div class="image-overlay"></div>
+                                    @foreach ($photoArray as $index => $photo)
+                                    <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                                        <img class="primary-img" src="{{ $photo }}" class="w-100" alt="Product Photo" id="item-image">
+                                    </div>
+                                    @endforeach
                                 </div>
+                                <a class="carousel-control-prev" href="#carousel{{$key}}" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carousel{{$key}}" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
                             </div>
-                            <div class="col-12 col-md-6">
-                                <div class="row mb-3">
+                        </div>
+                       <div class="col-12 col-md-6">
+                            <div class="row mb-3">
                                     <div class="col-12">
                                         <div class="dropdown">
                                             <button class="btn btn-block" type="button" id="dropdownMenuButton{{$key}}" data-bs-toggle="dropdown" aria-expanded="false" style="background: #000;display: flex;justify-content: space-between;">
@@ -327,14 +337,14 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    @endforeach
+</div>
+@endforeach
     
     <script>
         const dropdownButtons = document.querySelectorAll('[id^="dropdownMenuButton"]');
@@ -406,4 +416,6 @@
  @endsection
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
  
+ 
+
  
