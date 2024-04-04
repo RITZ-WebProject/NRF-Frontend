@@ -21,7 +21,6 @@ use App\Http\Controllers\InfoController;
 |
 */
 Route::post('/dinger-callback', [OrderController::class, 'dingerCallback']);
-Route::get('/success', [OrderController::class, 'success'])->name('success');
 Route::get('/error', [OrderController::class, 'error'])->name('error');
 
 Route::middleware(['active.check'])->group(function() {Route::get('/', function () {return view('layouts.home');});
@@ -66,6 +65,7 @@ Route::middleware(['logout'])->group(function() {
     	Route::get('/order_details/{id}',[CustomersController::class,'order_view']);
     	Route::get('/checkout',[OrderController::class,'cartCheckout'])->middleware('checkCart');
     	Route::post('/checkout',[OrderController::class,'orderStore'])->name('order.store');
+		Route::get('/success', [OrderController::class, 'success'])->name('success');
     });
     
 });
