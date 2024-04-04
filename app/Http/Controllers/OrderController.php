@@ -350,7 +350,7 @@ class OrderController extends Controller
         try {
             // Create new records in permanent tables
             $inv = new Invoice;
-            $inv->customer_id = session()->get('customer_uniquekey');
+            $inv->customer_id = $invoice->customer_id;
             $inv->status = "pending";
             $inv->total_price =$invoice->total_price ?? '';
             $inv->payment_method = "online";
