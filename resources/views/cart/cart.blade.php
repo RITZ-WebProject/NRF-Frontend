@@ -72,10 +72,12 @@
 
         @if ($cart)
         @foreach ($cart as $carts)
-        @php $photoArray = explode("'x'", $carts->attributes['photo']); @endphp
+
+        {{-- <img class="primary-img" src="{{ json_decode($products->photo)[0] }}" class="w-100" alt="Product Photo" id="item-image"> --}}
+        @php $photoArray = json_decode($carts->attributes['photo'], true); @endphp
         <div class="cart-item">
             <div class="position-relative">
-                <img src="{{ env('PHOTO_URL') . $photoArray[0] }}" alt="Product" class="cart-image">
+                <img src="{{ $photoArray[0] ?? ''}}" alt="Product" class="cart-image">
                 <div class="position-absolute top-0 end-0 mt-0 me-2 d-block d-md-none">
                     <a href="{{ route('cart.remove', ['id' => $carts->id]) }}">
                         <i class="fa fa-times text-white" style="font-size: 19px;"></i>
