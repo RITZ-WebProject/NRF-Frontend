@@ -21,7 +21,7 @@
             display: none;
         }
         .hero {
-        height: 75vh;
+        height: 80vh;
         padding: 80px 50px;
         }
         body, .hero p {
@@ -195,7 +195,7 @@
     }
 
     #about_logo{
-        width:500px;
+        width:400px;
     }
 
     #about_text{
@@ -220,9 +220,9 @@
       <div class="col-lg-12">
         <div class="col-lg-8">
           <img src="{{ asset('/assets/img/aboutus/2.png') }}" id="about_logo" alt="Your Logo">
-          <h3 class="text-black text-justify" style="clear: both;" id="about_text">
+          <h4 class="text-black text-justify">
             NRF™ isn’t just a brand - It’s a philosophy woven into every product we create. Embracing the notion that excellence knows no substitute, our brand has redefined the standard. Each item carries a commitment to unparalleled quality, making us the epitome of durability and craftsmanship.
-          </h3>
+          </h4>
         </div>
       </div>
     </div>

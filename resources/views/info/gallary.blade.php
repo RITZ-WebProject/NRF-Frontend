@@ -59,7 +59,7 @@
     <div class="photo-grid" style="background-color: #fff">
         @foreach($photos as $photo)
         <div class="photo">
-            <img src="{{ env('Gallary_URL').$photo->photo_url }}" alt="Image">
+            <img src="{{ $photo->photo_url }}" alt="Image">
         </div>
         @endforeach
     </div>
