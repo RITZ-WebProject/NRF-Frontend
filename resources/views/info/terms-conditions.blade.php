@@ -20,6 +20,7 @@
                     <li class="tc-list">Changes and amendments</li>
                     <li class="tc-list">Acceptance of these terms</li>
                     <li class="tc-list">Contacting us</li>
+                    <li class="tc-list">Refund Policy</li>
                 </ol>
             </div>
             <div class="pb-3">
@@ -64,9 +65,49 @@
                 <h4 style="font-weight:bold" class="pb-2">Acceptance of these terms</h4>
                 <p class="text-dark">You acknowledge that you have read this Agreement and agree to all its terms and conditions. By accessing and using the Website and Services you agree to be bound by this Agreement. If you do not agree to abide by the terms of this Agreement, you are not authorized to access or use the Website and Services.</p>
             </div>
-            <div class="pb-5">
+            <div class="pb-3">
                 <h4 style="font-weight:bold" class="pb-2">Contacting us</h4>
                 <p class="text-dark">If you have any questions, concerns, or complaints regarding this Agreement, we encourage you to contact us using the details below: <a href="http://noreplacementsfound.com/">NRF</a></p>
+            </div>
+            <div class="pb-3">
+                <h4 style="font-weight:bold" class="pb-2">Refund Policy</h4>
+                <p class="text-dark">
+                    At NRF Website, we are committed to providing our customers with high-quality products and excellent customer service. We understand that there may be situations where you need to cancel an order or seek a refund. This Refund Policy outlines the terms and conditions for processing refunds and cancellations. By making a purchase on our website, you agree to comply with this policy.
+                    
+                   <h5>* Cancellation Policy:</h5> 
+                    
+                   <h6> 1.1 Order Cancellation by the Customer:</h6>
+                    Once an order is placed, it cannot be canceled unless one of the following conditions is met:
+
+                    * The item has a factory defect: If you receive a product with a manufacturing defect, we will gladly accept your request for a cancellation and full refund. Please contact our customer support team with clear images or videos of the defect within 10days of receiving the product.
+                    <br>
+                    * Size Change: If you wish to change the size of the item you ordered, you must notify us within 7 days of receiving the product. We will process your request for a size change, subject to the availability of the requested size. Any price differences will be handled accordingly.
+
+                   <h6>1.2 Order Cancellation by NRF Website:</h6> 
+                    In some cases, we may need to cancel an order due to reasons such as unavailability of stock or other unforeseen circumstances. If we cancel your order, you will receive a full refund of the payment made.
+                    
+                   <h5>* Refund Policy:</h5>
+
+                    <h6>2.1 Refunds for Order Cancellation by the Customer:</h6>
+                    If you are eligible for an order cancellation as per the conditions mentioned in section 1.1, you will be eligible for a refund. However, please note that a processing fee of 15% of the order value will be deducted from the refund amount to cover administrative and transaction costs.
+
+                    <h6>2.2 Refunds for Order Cancellation by NRF Website:</h6>
+                    If we cancel your order due to reasons outlined in section 1.2, you will receive a full refund of the payment made. We will initiate the refund within 5 days of canceling the order.
+
+                    <h6>2.3 Refunds for Factory Defects or Damaged Items:</h6>
+                    If you receive a product with a factory defect or damage, please contact our customer support team immediately with clear images or videos of the issue. We will investigate the matter and, if found valid, provide you with a full refund or offer a replacement as per your preference.
+
+                    <h6>2.4 Refunds for Size Change:</h6>
+                    If you request a size change as per the conditions mentioned in section 1.1, we will process the exchange free of charge. However, if the requested size is unavailable, or you prefer to receive a refund instead of an exchange, we will provide you with a refund equal to the amount paid for the original item.
+
+                    <h5>* Refund Process:</h5>
+
+                   <h6>To request a refund or cancellation, please contact our customer support team. Include your order details and a clear explanation of the reason for the refund or cancellation request. Our team will guide you through the process and address any queries you may have.</h6> 
+
+                    <h6>Please note that this Refund Policy is subject to change without prior notice. Any updates to the policy will be posted on our website.</h6>
+
+                    <h6>By making a purchase on NRF Website, you acknowledge that you have read, understood, and agreed to the terms and conditions of this Refund Policy.</h6>
+                </p>
             </div>
         </div>
     </div>

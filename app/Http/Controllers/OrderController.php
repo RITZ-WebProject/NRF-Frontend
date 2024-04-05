@@ -328,9 +328,8 @@ class OrderController extends Controller
          
 
     } catch (\Exception $err) {
-        dd($err);
         DB::rollBack();
-        abort(403, "Fail to order, missing required informations.");
+       abort(403, "Please Fill Address correctly.");
         return response()->json(['status_code' => 404, 'message' => 'Fail to order']);
     }
 }
