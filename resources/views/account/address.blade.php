@@ -46,10 +46,10 @@
         <div class="col-sm-12 col-md-2 col-lg-2 p-5">
             <ul role="tablist" class="nav flex-column dashboard-list text-center">
                 <ul role="tablist" class="nav flex-column dashboard-list">
-                    <li><a href="{{ url('/account') }}" class="nav-link text-white">My Profile</a></li>
-                    <li><a href="{{ url('/account') }}" class="nav-link text-white active">Orders</a></li>
-                    <li><a href="{{ url('/account') }}" class="nav-link text-white">Addresses</a></li>
-                    <li><a href="{{ url('/signout') }}" class="nav-link text-white">logout</a></li>
+                    <li><a href="{{ url('/account') }}" class="nav-link text-white text-uppercase">My Profile</a></li>
+                    <li><a href="{{ url('/account') }}" class="nav-link text-white active text-uppercase">Orders</a></li>
+                    <li><a href="{{ url('/account') }}" class="nav-link text-white text-uppercase">Addresses</a></li>
+                    <li><a href="{{ url('/signout') }}" class="nav-link text-white text-uppercase">logout</a></li>
                 </ul>
             </ul>
         </div>

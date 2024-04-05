@@ -252,7 +252,7 @@
                         </a>
                     </div>
                     <p class="item-description text-black">
-                        {{ $products->product_name }} <br>{{ number_format($products->price, 0, ',') }} MMK({{ number_format($products->dollor, 0, ',') }} $)
+                        {{ $products->product_name }} <br>{{ number_format($products->price, 0, ',') }} MMK(${{ number_format($products->dollor, 0, ',') }})
                     </p>
                 </div>
     

@@ -45,10 +45,10 @@
     <div class="desktop row">
         <div class="col-sm-12 col-md-2 col-lg-2 p-5">
                 <ul role="tablist" class="nav flex-column dashboard-list text-center">
-                    <li><a href="#account-details" data-bs-toggle="tab" class="nav-link active text-white">My Profile</a></li>
-                    <li><a href="#orders" data-bs-toggle="tab" class="nav-link text-white">Orders</a></li>
-                    <li><a href="#address" data-bs-toggle="tab" class="nav-link text-white">Addresses</a></li>
-                    <li><a href="{{url('/signout')}}" class="nav-link text-white">logout</a></li>
+                    <li><a href="#account-details" data-bs-toggle="tab" class="nav-link active text-white text-uppercase">My Profile</a></li>
+                    <li><a href="#orders" data-bs-toggle="tab" class="nav-link text-white text-uppercase">Orders</a></li>
+                    <li><a href="#address" data-bs-toggle="tab" class="nav-link text-white text-uppercase">Addresses</a></li>
+                    <li><a href="{{url('/signout')}}" class="nav-link text-white text-uppercase">logout</a></li>
                 </ul>
         </div>
         <div class="col-sm-12 col-md-10 col-lg-10" style="background: #fff;height:600px;">

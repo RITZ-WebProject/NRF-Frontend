@@ -14,6 +14,15 @@
                 <div class="card checkout-card">
                     <div class="card-body">
                         <h5 class="card-title">Billing and Shipping Information</h5>
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <form>
                             <div class="row">
                                 <!-- <div class="col-md-12 d-flex"> -->
@@ -46,7 +55,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="state">State/Division</label>
-                                        <select class="form-control" name="division_id_select" id="divisionDropdown" disabled>
+                                        <select class="form-control" name="division_id_select" id="divisionDropdown">
                                             <option value="" {{ $customer->division ? ($customer->division->division_name == '' ? 'selected' : '') : '' }}>Select State/Division</option>
                                             @foreach($divisions as $division)
                                                 <option value="{{ $division->id }}" {{ $customer->division ? ($customer->division->division_name == $division->division_name ? 'selected' : '') : '' }}>{{ $division->division_name }}</option>
